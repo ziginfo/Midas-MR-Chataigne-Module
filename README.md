@@ -1,2 +1,2 @@
-# M32 / X32 control with chataigne
-Default port must be 10023 !
+# Midas MR and Behringer X-Air control with chataigne
+Default port must be 10024 !
