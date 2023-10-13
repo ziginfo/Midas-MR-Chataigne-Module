@@ -1,4 +1,5 @@
-
+// based on the "Behringer World Wiki"
+//   https://behringer.world/wiki/doku.php?id=x-air_osc
 
 
 //  Chan Config
