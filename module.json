@@ -280,7 +280,7 @@
 				"Channel" : {
 					"type":"Enum",
 					"options": {
-						"Channel" : "ch", } },
+						"Channel" : "ch" } },
 				
 				"Channel No": {
 					"type": "Integer",
