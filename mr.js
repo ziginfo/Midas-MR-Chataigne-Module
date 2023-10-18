@@ -1,6 +1,6 @@
 // based on the "Behringer World Wiki"
 //   https://behringer.world/wiki/doku.php?id=x-air_osc
-
+// and the M32forChataigne-Module by norbertrostaing (thanks to him !)
 
 //  Chan Config
 
