@@ -7,7 +7,7 @@
 	"url":"https://github.com/ziginfo/Midas-MR-Chataigne-Module",
 	"downloadURL": "https://github.com/ziginfo/Midas-MR-Chataigne-Module/archive/refs/heads/main.zip",
 	
-	"hasInput": false,
+	"hasInput": true,
 	"hasOutput": true, 
 
 	"hideDefaultCommands": true,
@@ -19,7 +19,7 @@
 		"OSC Outputs": {
 			"OSC Output": {
 				"local" : false,
-				"remoteHost" : "192.168.50.40",
+				"remoteHost" : "",
 				"remotePort" : 10024,			
 				"listenToFeedback":false
 			} } },
