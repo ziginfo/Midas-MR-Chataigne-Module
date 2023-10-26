@@ -1,6 +1,6 @@
 //  initial functions
 
-function update(deltaTime) {
+/*  function update(deltaTime) {
 	var now = util.getTime();
 	if(now > TSSendAlive) {
 		TSSendAlive = now + 5;
@@ -12,20 +12,7 @@ function update(deltaTime) {
 function keepAlive() {
 	local.send("/xinfo");
 }
-
-
-
-function oscEvent(address, args) { 
-// names
-if (address!= 0){ 
-local.values.infos.info1.set(address); 
-local.values.infos.info2.set(args[0]);
-local.values.infos.info3.set(args[1]);}
-if (address=="/ch/01/config/name"){ 
-local.values.infos.info2.set("name2"); }
-if (address=="/ch/02/config/name"){ 
-local.values.infos.info3.set("name3"); }
-}
+*/
 
 
 
