@@ -10,5 +10,5 @@ Now we have Feedback from the MR/X-Air Console (Names and Fader-Levels etc)... I
 
 "Listen to Feedback" in the Parameter-Field must be activated ! (it is "ON" by default when inserting a MR-Module)   
 And please note that after  inserting a "new" MR-Module and/or changing the Remote-Host-Address, Feedback from the console may be not available immediatly and may need a restart of Chataigne. 
-(*unless you had already entered the (remoteHost)address in the "module.json" file before inserting the module; in this case Feedback will be available instantly !*) But anyway, once the session file is "saved" then the feedback will always be available !   
+(*unless you had already entered the "remoteHost address" in the "module.json" file before inserting the module; in this case Feedback will be available instantly !*) But anyway, once the session file is "saved" then the feedback will always be available !   
 
