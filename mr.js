@@ -3,7 +3,7 @@ function init() {
 	
 	infos=local.values.addContainer("Infos");
 		infos.setCollapsed(true);	
-		for (var i = 1; i<=8; i++) {
+		for (var i = 1; i<=10; i++) {
 		infos.addStringParameter("Info "+(i), "","");}
 		
 	names=local.values.addContainer("Names");
@@ -29,11 +29,12 @@ function init() {
 		faders.addFloatParameter("Main LR", "", 0, 0, 1);
 		for (var i = 1; i<=4; i++) {
 		faders.addFloatParameter("DCA "+(i), "", 0, 0, 1);}
-		
 }
 
 function moduleValueChanged(value) { 
  	if (value.name=="clickToUpdateAll"){ 
+ 		local.send("/xinfo");
+		local.send("/status") ;
  		for(var i=1; i <10; i++) {
 		local.send("/subscribe","/ch/0"+i+"/config/name 50");}
 		for(var i=10; i <=16; i++) {
@@ -52,25 +53,20 @@ function moduleValueChanged(value) {
 		local.send("/subscribe","/bus/"+i+"/mix/fader 50");} 
 		local.send("/subscribe","/lr/mix/fader 50");
 		for(var i=1; i <=4; i++) {
-		local.send("/subscribe","/dca/"+i+"/fader 50");}  }  
+		local.send("/subscribe","/dca/"+i+"/fader 50");}
+		   } 
  }
-
 
 function update(deltaTime) {
 	var now = util.getTime();
 	if(now > TSSendAlive) {
-		TSSendAlive = now + 5;
-		keepAlive();
-	}
+		TSSendAlive = now + 8;
+		keepAlive(); }
 }
-
 
 function keepAlive() {
-	local.send("/xinfo");
-	
+	local.send("/xremote") ;
 }
-
-
 
 function oscEvent(address, args) { 
 // infos
@@ -79,7 +75,11 @@ function oscEvent(address, args) {
 		for(var i=0; i <=3; i++) {
 		var n=i+2 ; 
 		local.values.infos.getChild('Info'+n).set(args[i]);}  }
-
+		if (address== "/status"){ 
+		for(var i=0; i < 3; i++) {
+		var n=i+6 ; 
+		local.values.infos.getChild('Info'+n).set(args[i]);}  }
+// names
 		for(var i=1; i <10; i++) {
 		if (address == "/ch/0"+i+"/config/name") {
 		local.values.names.getChild('Track'+i).set(args[0]);} }		
@@ -91,7 +91,7 @@ function oscEvent(address, args) {
 		for(var i=1; i <=4; i++) {
 		if (address == "/rtn/"+i+"/config/name") {
 		local.values.names.getChild('fxReturn'+i).set(args[0]);} }	
-
+// faders
 		for(var i=1; i <10; i++) {
 		if (address == "/ch/0"+i+"/mix/fader") {
 		local.values.faders.channelFaders.getChild('Fader'+i).set(args[0]);} }		
@@ -116,7 +116,7 @@ function oscEvent(address, args) {
 		local.values.faders.busDCAFaders.getChild('DCA'+i).set(args[0]);} }	
 }
 
-// Request
+// Requests
 function request_names() {
  		for(var i=1; i <10; i++) {
 		local.send("/subscribe","/ch/0"+i+"/config/name 50");}
