@@ -1,6 +1,61 @@
 //  initial functions
+function init() {
+	
+	infos=local.values.addContainer("Infos");
+		infos.setCollapsed(true);	
+		for (var i = 1; i<=8; i++) {
+		infos.addStringParameter("Info "+(i), "","");}
+		
+	names=local.values.addContainer("Names");
+		names.setCollapsed(true);	
+		for (var i = 1; i<=16; i++) {
+		names.addStringParameter("Track "+(i), "","");}
+		names.addStringParameter("Aux USB", "","");
+		for (var i = 1; i<=4; i++) {
+		names.addStringParameter("FX Return "+(i), "","");}
+		
+	faders = local.values.faders.addContainer("Channel Faders");
+		faders.setCollapsed(true);
+		for (var i = 1; i<=16; i++) {
+		faders.addFloatParameter("Fader "+(i), "", 0, 0, 1);}
+		faders.addFloatParameter("Aux USB", "", 0, 0, 1);
+		for (var i = 1; i<=4; i++) {
+		faders.addFloatParameter("FX Return "+(i), "", 0, 0, 1);}
+		
+	faders = local.values.faders.addContainer("Bus DCA Faders");
+		faders.setCollapsed(true);
+		for (var i = 1; i<=6; i++) {
+		faders.addFloatParameter("Bus "+(i), "", 0, 0, 1);}
+		faders.addFloatParameter("Main LR", "", 0, 0, 1);
+		for (var i = 1; i<=4; i++) {
+		faders.addFloatParameter("DCA "+(i), "", 0, 0, 1);}
+		
+}
 
-/*  
+function moduleValueChanged(value) { 
+ 	if (value.name=="clickToUpdateAll"){ 
+ 		for(var i=1; i <10; i++) {
+		local.send("/subscribe","/ch/0"+i+"/config/name 50");}
+		for(var i=10; i <=16; i++) {
+		local.send("/subscribe","/ch/"+i+"/config/name 50");}
+		for(var i=1; i <=4; i++) {
+		local.send("/subscribe","/rtn/"+i+"/config/name 50");} 
+		local.send("/subscribe","/rtn/aux/config/name 50"); 
+		for(var i=1; i <10; i++) {
+		local.send("/subscribe","/ch/0"+i+"/mix/fader 50");} 
+		for(var i=10; i <=16; i++) {
+		local.send("/subscribe","/ch/"+i+"/mix/fader 50");}
+		for(var i=1; i <=4; i++) {
+		local.send("/subscribe","/rtn/"+i+"/mix/fader 50");} 
+		local.send("/subscribe","/rtn/aux/mix/fader 50");
+		for(var i=1; i <6; i++) {
+		local.send("/subscribe","/bus/"+i+"/mix/fader 50");} 
+		local.send("/subscribe","/lr/mix/fader 50");
+		for(var i=1; i <=4; i++) {
+		local.send("/subscribe","/dca/"+i+"/fader 50");}  }  
+ }
+
+
 function update(deltaTime) {
 	var now = util.getTime();
 	if(now > TSSendAlive) {
@@ -12,20 +67,107 @@ function update(deltaTime) {
 
 function keepAlive() {
 	local.send("/xinfo");
+	
 }
 
+
+
 function oscEvent(address, args) { 
-// names
-if (address!= 0){ 
-local.values.infos.info1.set(address); 
-local.values.infos.info2.set(args[0]);
-local.values.infos.info3.set(args[1]);}
-if (address=="/ch/01/config/name"){ 
-local.values.infos.info2.set("name2"); }
-if (address=="/ch/02/config/name"){ 
-local.values.infos.info3.set("name3"); }
+// infos
+		if (address== "/xinfo"){ 
+		local.values.infos.info1.set(address);
+		for(var i=0; i <=3; i++) {
+		var n=i+2 ; 
+		local.values.infos.getChild('Info'+n).set(args[i]);}  }
+
+		for(var i=1; i <10; i++) {
+		if (address == "/ch/0"+i+"/config/name") {
+		local.values.names.getChild('Track'+i).set(args[0]);} }		
+		for(var i=10; i <=18; i++) {
+		if (address == "/ch/"+i+"/config/name") {
+		local.values.names.getChild('Track'+i).set(args[0]);} }
+		if (address == "/rtn/aux/config/name") {
+		local.values.names.auxUSB.set(args[0]);}
+		for(var i=1; i <=4; i++) {
+		if (address == "/rtn/"+i+"/config/name") {
+		local.values.names.getChild('fxReturn'+i).set(args[0]);} }	
+
+		for(var i=1; i <10; i++) {
+		if (address == "/ch/0"+i+"/mix/fader") {
+		local.values.faders.channelFaders.getChild('Fader'+i).set(args[0]);} }		
+		for(var i=10; i <=16; i++) {
+		if (address == "/ch/"+i+"/mix/fader") {
+		local.values.faders.channelFaders.getChild('Fader'+i).set(args[0]);} }
+		
+		for(var i=1; i <=4; i++) {
+		if (address == "/rtn/"+i+"/mix/fader") {
+		local.values.faders.channelFaders.getChild('fxReturn'+i).set(args[0]);} }
+		
+		if (address == "/rtn/aux/mix/fader") {
+		local.values.faders.channelFaders.auxUSB.set(args[0]);}
+		
+		for(var i=1; i <=6; i++) {
+		if (address == "/bus/"+i+"/mix/fader") {
+		local.values.faders.busDCAFaders.getChild('Bus'+i).set(args[0]);} }
+		if (address == "/lr/mix/fader") {
+		local.values.faders.busDCAFaders.mainLR.set(args[0]);}	
+		for(var i=1; i <=4; i++) {
+		if (address == "/dca/"+i+"/fader") {
+		local.values.faders.busDCAFaders.getChild('DCA'+i).set(args[0]);} }	
 }
-*/
+
+// Request
+function request_names() {
+ 		for(var i=1; i <10; i++) {
+		local.send("/subscribe","/ch/0"+i+"/config/name 50");}
+		for(var i=10; i <=16; i++) {
+		local.send("/subscribe","/ch/"+i+"/config/name 50");}
+		for(var i=1; i <=4; i++) {
+		local.send("/subscribe","/rtn/"+i+"/config/name 50");} 
+		local.send("/subscribe","/rtn/aux/config/name 50");  		 
+}
+
+function request_chfader() {
+ 		for(var i=1; i <10; i++) {
+		local.send("/subscribe","/ch/0"+i+"/mix/fader 50");} 
+		for(var i=10; i <=16; i++) {
+		local.send("/subscribe","/ch/"+i+"/mix/fader 50");}
+		for(var i=1; i <=4; i++) {
+		local.send("/subscribe","/rtn/"+i+"/mix/fader 50");} 
+		local.send("/subscribe","/rtn/aux/mix/fader 50"); 		
+}
+
+function request_busfader() {
+ 		for(var i=1; i <6; i++) {
+		local.send("/subscribe","/bus/"+i+"/mix/fader 50");} 
+		local.send("/subscribe","/lr/mix/fader 50");
+		for(var i=1; i <=4; i++) {
+		local.send("/subscribe","/dca/"+i+"/fader 50");}
+}
+
+function request_all() {
+ 		for(var i=1; i <10; i++) {
+		local.send("/subscribe","/ch/0"+i+"/config/name 50");}
+		for(var i=10; i <=16; i++) {
+		local.send("/subscribe","/ch/"+i+"/config/name 50");}
+		for(var i=1; i <=4; i++) {
+		local.send("/subscribe","/rtn/"+i+"/config/name 50");} 
+		local.send("/subscribe","/rtn/aux/config/name 50"); 
+		for(var i=1; i <10; i++) {
+		local.send("/subscribe","/ch/0"+i+"/mix/fader 50");} 
+		for(var i=10; i <=16; i++) {
+		local.send("/subscribe","/ch/"+i+"/mix/fader 50");}
+		for(var i=1; i <=4; i++) {
+		local.send("/subscribe","/rtn/"+i+"/mix/fader 50");} 
+		local.send("/subscribe","/rtn/aux/mix/fader 50");
+		for(var i=1; i <6; i++) {
+		local.send("/subscribe","/bus/"+i+"/mix/fader 50");} 
+		local.send("/subscribe","/lr/mix/fader 50");
+		for(var i=1; i <=4; i++) {
+		local.send("/subscribe","/dca/"+i+"/fader 50");}  		 
+}
+
+
 
 
 
@@ -652,8 +794,13 @@ function mute_group (group, val) {
 function solo_level (target, val) { 
 	
 	local.send("/config/"+target+"/level", val);
-
 }
+
+function xinfo () { 
+	
+	local.send("/xinfo");
+}
+
 
 
 
