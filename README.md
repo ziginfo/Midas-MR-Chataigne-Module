@@ -5,8 +5,9 @@ most of the commands run for both MR12 and MR18; but some of them will work only
 the Player-Functions for example are valid only for MR12   
 and be aware that the available Channels and Busses etc are different regarding the model (MR-12 or 18; XR 12, 16, or 18) !
 
-### Updated to version 1.5
-Now we have Feedback from the MR/X-Air Console (Names and Fader-Levels etc)... I probably will add some more in the future...
+### Updated to version 1.6
+Now we have Feedback from the MR/X-Air Console (Names and Fader-Levels, EQ, Mute, Dyn and Pan Status etc)... I probably will add some more in the future...
+Meters still do not work....  
 
 "Listen to Feedback" in the Parameter-Field must be activated ! (it is "ON" by default when inserting a MR-Module)   
 To initiate Feedback it may be necessary to hit the Sync-Button ("Click to update all") or send one of the Sync-Request-Actions (in the Action Menu "Requests")
