@@ -29,7 +29,7 @@
 		"OSC Outputs": {
 			"OSC Output": {
 				"local" : false,
-				"remoteHost" : "set Console IP-Address",
+				"remoteHost" : "192.168.50.40",
 				"remotePort" : 10024,			
 				"listenToFeedback":true
 			}
@@ -43,11 +43,13 @@
 	
 	"values":  {
 	
-		"Click to update all":
-			{ "type":"Trigger",
-				"description":"Update actual device status.\n"  },
+		
 		
 		"Faders":{
+			"type":"Container",
+			"collapsed":true  },
+			
+		"Channels":{
 			"type":"Container",
 			"collapsed":true  }	
 	},
@@ -56,29 +58,6 @@
 	
 	"commands": {
 	
-	"Sync Names" : {
-			"menu" : "Requests",
-			"callback" : "request_names"},
-			
-	"Sync Channel Faders" : {
-			"menu" : "Requests",
-			"callback" : "request_chfader"},
-			
-	"Sync Bus Faders" : {
-			"menu" : "Requests",
-			"callback" : "request_busfader"},
-			
-		"Sync Aux&FxRtn Faders" : {
-			"menu" : "Requests",
-			"callback" : "request_rtnfader"},
-			
-		"Sync DCA&MTX Faders" : {
-			"menu" : "Requests",
-			"callback" : "request_dcafader"},
-			
-		"Sync All" : {
-			"menu" : "Requests",
-			"callback" : "request_all"},
 	
 
 		"Level" : {
@@ -2964,8 +2943,32 @@
 						"USB Record 18x18" : 0 } }				
 			} },
 			
+		"Sync Names" : {
+			"menu" : "Requests",
+			"callback" : "request_names"},
+			
+		"Sync Channel Faders" : {
+			"menu" : "Requests",
+			"callback" : "request_chfader"},
+			
+		"Sync Bus Faders" : {
+			"menu" : "Requests",
+			"callback" : "request_busfader"},
+			
+		"Sync Aux&FxRtn Faders" : {
+			"menu" : "Requests",
+			"callback" : "request_rtnfader"},
+			
+		"Sync DCA&MTX Faders" : {
+			"menu" : "Requests",
+			"callback" : "request_dcafader"},
+			
+		"Sync All" : {
+			"menu" : "Requests",
+			"callback" : "request_all"},
+	
 		"Xinfo" : {
-			"menu" : "Actions",
+			"menu" : "Requests",
 			"callback" : "xinfo"
 			}
 
