@@ -93,10 +93,10 @@ function init() {
 		
 	UseMeters = local.values.addBoolParameter("Use Meters", "" , false);
 */
-	UpdateAll = local.values.addTrigger("Click to update all", "Initiate and Update Values" , false);
+	UpdateAll = local.values.addTrigger("Click to update all", "Initiate and Update Values from the Console !" , false);
 	SendInfo = local.values.channels.addStringParameter("Channel Info", "Info","Change and Send Values here!");
 	Sending = local.values.channels.addTrigger("Click to send Updates", "Send Updated Values" , false);
-	Alerte = local.values.channels.addStringParameter("Alerte", "Alert","Be careful with this feature !!!");		
+	Alerte = local.values.channels.addStringParameter("Alert", "Alert","Be careful with this feature !!");		
 }
 
 function moduleValueChanged(value) { 
@@ -175,6 +175,14 @@ function moduleValueChanged(value) {
 		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/ch/"+n+"/mix/fader", f);}
 		
+		for(var i=1; i <=6; i++) {
+		var d = local.values.channels.getChild('Bus'+i).getChild('Fader').get();
+		if (d < -60)  {var f = (d + 90) / 480;}
+		else if (d < -30) {var f = (d + 70) / 160;}
+		else if (d < -10) {var f = (d + 50) / 80;}
+		else if (d <= 10) {var f = (d + 30) / 40;}
+		local.send("/bus/"+i+"/mix/fader", f);}
+		
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Pan').get();
 		val=(val+50)/100 ;
@@ -187,10 +195,19 @@ function moduleValueChanged(value) {
 		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/ch/"+n+"/mix/on", val);}
 		
+		for(var i=1; i <=6; i++) {
+		var val = local.values.channels.getChild('Bus'+i).getChild('Mute').get();
+		val=1-val ;
+		local.send("/bus/"+i+"/mix/on", val);}
+		
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('EQ').get();
 		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/ch/"+n+"/eq/on", val);}
+		
+		for(var i=1; i <=6; i++) {
+		var val = local.values.channels.getChild('Bus'+i).getChild('EQ').get();
+		local.send("/bus/"+i+"/eq/on", val);}
 		
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('LoCut').get();
@@ -201,6 +218,10 @@ function moduleValueChanged(value) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Dyn').get();
 		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/ch/"+n+"/dyn/on", val);}
+		
+		for(var i=1; i <=6; i++) {
+		var val = local.values.channels.getChild('bus'+i).getChild('Dyn').get();
+		local.send("/bus/"+i+"/dyn/on", val);}
 		
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Gate').get();
