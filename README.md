@@ -8,7 +8,7 @@ And please be aware that the number of available Channels and Busses etc depends
 ### Updated to version 1.8
 Now we have Feedback from the MR/X-Air Console (Names and Fader-Levels, EQ, Mute, Dyn and Pan Status etc)... 
 And there is a new feature that allows to send values directly from the "Channels-Container" to the console, for example after changing a value in the Channel Field in Chataigne!
-Please be extremely careful with this feature; as you may erase settings and value on the console !! For example if you hit "SEND" before having any datas and values in the fields, which results in a sort of "RESET" !!  
+Please be extremely careful with this feature; as you may erase settings and values on the console !! For example if you hit "SEND" before having any datas and values in the fields, which results in a sort of "RESET" !!  
 The best way to proceed is :  
 Before sending data, first recover all the data from the console by "click To Update All"; than make eventually changes in the Channels and send them to the console by "Click To Send Updates"
 Meters still do not work....  
