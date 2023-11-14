@@ -1,9 +1,9 @@
 ## Midas MR and Behringer X-Air control with chataigne by OSC
 Default port must be 10024 !
 
-most of the commands run for both MR12 and MR18; but some of them will work only for a given model !   
-the Player-Functions for example are valid only for MR12   
-and be aware that the available Channels and Busses etc are different regarding the model (MR-12 or 18; XR 12, 16, or 18) !
+Most of the commands run for both MR12 and MR18; but some of them will work only for a given model !   
+The Player-Functions for example are valid only for MR12   
+And please be aware that the number of available Channels and Busses etc depends on the model (MR-12 or 18; XR 12, 16, or 18) !
 
 ### Updated to version 1.8
 Now we have Feedback from the MR/X-Air Console (Names and Fader-Levels, EQ, Mute, Dyn and Pan Status etc)... 
