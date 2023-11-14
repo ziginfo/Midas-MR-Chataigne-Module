@@ -103,10 +103,11 @@ function moduleValueChanged(value) {
  	if (value.name == "clickToUpdateAll"){ 
  		local.send("/xinfo");
 		local.send("/status");
-		local.send("/meters", "/meters/1");
+//		local.send("/meters", "/meters/1");
 		
+// you can customize and choose how many and which messages you wann show up in the "Infos-Fiels"		
 		for(var i=0; i < message.length; i++) {
-		var n = i+13 ;
+		var n = i+12 ;
 		var text = message[i];
 		local.values.infos.getChild('Info'+n).set(text);}
 		
