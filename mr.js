@@ -82,7 +82,7 @@ function init() {
 		chan.setCollapsed(true);}
 
 
-	UpdateAll = local.values.addTrigger("Click to update all", "Initiate and Update Values from the Console !" , false);
+	UpdateAll = local.values.addTrigger("Click to Sync all", "Initiate and Update Values from the Console !" , false);
 	SendInfo = local.values.channels.addStringParameter("Channel Info", "Info","Change and Send Values here!");
 	Sending = local.values.channels.addTrigger("Click to send Updates", "Send Updated Values" , false);
 	Alert = local.values.channels.addStringParameter("Advice", "Alert","Be careful with this feature !!");
@@ -90,7 +90,7 @@ function init() {
 }
 
 function moduleValueChanged(value) { 
- 	if (value.name == "clickToUpdateAll"){ 
+ 	if (value.name == "clickToSyncAll"){ 
  		local.send("/xinfo");
 		local.send("/status");
 		
