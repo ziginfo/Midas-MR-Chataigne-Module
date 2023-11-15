@@ -18,6 +18,6 @@ To initiate Feedback it may be necessary to hit the Sync-Button ("Click to updat
 And please note that after  inserting a "new" MR-Module and/or after changing the Remote-Host-Address, Feedback from the console may not be available immediatly and may need a restart of Chataigne. 
 (*unless you had already entered the "remoteHost address" in the "module.json" file before inserting the module; in this case Feedback will be available instantly !*) But anyway, once the session file is "saved" then the feedback will always be available !   
 
-**Older version 1.7**  
-**Older version 1.5**  
-**Older version 1.3**
+***Older version 1.7***  
+***Older version 1.5***  
+***Older version 1.3***
