@@ -11,7 +11,7 @@ And there is a new feature that allows to send values directly from the "Channel
 Please be extremely careful with this feature; as you may erase settings and values on the console !! For example if you hit "SEND" before having any datas and values in the fields, which results in a sort of "RESET" !! In fact, the fonction ""Click To Send Updates"" will send all the values (and the "zero-values" !!) of the Channel-Container-Fields !!     
 The best way to proceed is :  
 Before sending data from Chataigne to the console by the Containers "Form-Fields", first recover all the data from the console by **"Click To Update All"**; than make eventually changes in the Channels and send them back to the console by **"Click To Send Updates"**.   
-For instance I limited the "Send-to-Console-Feature"  to the Channels Values Container (just to avoid risks and confusion)
+For instance I limited the "Send-to-Console-Feature"  to the Channels Values Container only ! (just to avoid risks and confusion)
 
 To get Feedback from the console, "Listen to Feedback" in the Parameter-Field must be activated ! (it is "ON" by default when inserting a MR-Module)   
 To initiate Feedback it may be necessary to hit the Sync-Button ("Click to update all") or send one of the Sync-Request-Actions (in the Action Menu "Requests")
