@@ -135,7 +135,7 @@ function moduleValueChanged(value) {
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/subscribe","/ch/"+n+"/gate/on");}		
-		for(var i=10; i <=16; i++) {
+		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/subscribe","/ch/"+n+"/preamp/hpon");}		
 		local.send("/subscribe","/lr/mix/fader");
