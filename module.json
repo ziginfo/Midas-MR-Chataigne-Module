@@ -3,7 +3,7 @@
 	"type": "OSC",
 	"path": "Console",
 	
-	"version": "1.8.2",
+	"version": "2.0",
 	"description": "Allow you to control a Midas MR or Behringer X-Air with chataigne",
 	"url":"https://github.com/ziginfo/Midas-MR-Chataigne-Module",
 	"downloadURL": "https://github.com/ziginfo/Midas-MR-Chataigne-Module/archive/refs/heads/main.zip",
@@ -47,11 +47,19 @@
 		
 		"Faders":{
 			"type":"Container",
-			"collapsed":true  },
+			"collapsed":true,  
+			"readonly" : true},
 			
 		"Channels":{
 			"type":"Container",
-			"collapsed":true  }	
+			"collapsed":true  }	,
+			
+		"Selected Channel":{
+			"type":"Container",
+			"collapsed":true,
+			"Select Target":{"type":"Enum","options":{"Input":"ch","Bus":"bus","FX-Return":"rtn","FX-Send":"fxsend","Main LR":"lr"}},  
+			"Select No":{"type":"Integer", "min":1,"max":16},			
+			}	
 	},
 	
 	

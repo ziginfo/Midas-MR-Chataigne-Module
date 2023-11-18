@@ -1,41 +1,103 @@
-// Vars
-
+// ========================== VARS ===========================
 var myParameters = {};
 var UseMeters;
 var UpdateAll;
+var SelChanParams;
+var ShowInfos;
+var ShowNames;
+var push ;
+var tar;
+var no ;
+var link ;
+var trig ;
 var meters1 = [
 	"Chan1", "Chan2", "Chan3", "Chan4", "Chan5", "Chan6", "Chan7", "Chan8", "Chan9", "Chan10", "Chan11", "Chan12", "Chan13", "Chan14", "Chan15", "Chan16", 
 	"Aux1", "Bus1", "Bus2", "Bus3", "Bus4", "Bus5", "Bus6", "FxSnd1", "FxSnd2", "FxSnd3", "FxSnd4", 
 	"ST-L", "ST-R", "Mon1", "Mon2" ];
+var selChann = {
+	"name"	:	["Label", "s", "label"],
+	"mix" : ["Fader", "s","fader"],
+	"pan" : ["Pan", "s","pan"],
+	"invert" : ["Invert", "b","invert"],
+	"mute" : ["Mute", "b","mute"],
+	"hpf.on" : ["LoCut on", "b","loCutOn"],
+	"eq.hpf.freq" : ["LoCut Freq", "s","loCutFreq"],
+	"eq.on" : ["Eq on", "b","eqOn"],
+	"eq.b1.type" : ["Type Eq 1", "s", "typeEq1"],
+	"eq.b1.gain" : ["Gain Eq 1", "s", "gainEq1"],
+	"eq.b1.freq" : ["Freq Eq 1", "s", "freqEq1"],	
+	"eq.b1.q" : ["Q Eq 1", "s", "qEq1"],
+	"eq.b2.type" : ["Type Eq 2", "s", "typeEq2"],
+	"eq.b2.gain" : ["Gain Eq 2", "s", "gainEq2"],
+	"eq.b2.freq" : ["Freq Eq 2", "s", "freqEq2"],	
+	"eq.b2.q" : ["Q Eq 2", "s", "qEq2"],
+	"eq.b3.type" : ["Type Eq 3", "s", "typeEq3"],
+	"eq.b3.gain" : ["Gain Eq 3", "s", "gainEq3"],
+	"eq.b3.freq" : ["Freq Eq 3", "s","freqEq3"],
+	"eq.b3.q" : ["Q Eq 3", "s", "qEq3"],
+	"eq.b4.type" : ["Type Eq 4", "s", "typeEq4"],
+	"eq.b4.gain" : ["Gain Eq 4", "s", "gainEq4"],
+	"eq.b4.freq" : ["Freq Eq 4", "s", "freqEq4"],
+	"eq.b4.q" : ["Q Eq 4", "s", "qEq4"],
+	"eq.b5.type" : ["Type Eq 5", "s", "typeEq5"],
+	"eq.b5.gain" : ["Gain Eq 5", "s", "gainEq5"],
+	"eq.b5.freq" : ["Freq Eq 5", "s", "freqEq5"],
+	"eq.b5.q" : ["Q Eq 5", "s", "qEq5"],
+	"eq.b6.type" : ["Type Eq 6", "s", "typeEq6"],
+	"eq.b6.gain" : ["Gain Eq 6", "s", "gainEq6"],
+	"eq.b6.freq" : ["Freq Eq 6", "s", "freqEq6"],
+	"eq.b6.q" : ["Q Eq 6", "s", "qEq6"],
+	"dyn.on" : ["Dyn on", "b", "dynOn"],	
+	"dyn.ratio" : ["Dyn Ratio", "s", "dynRatio"],
+	"dyn.threshold" : ["Dyn Threshold", "s", "dynThreshold"],
+	"dyn.outgain" : ["Dyn OutGain", "s", "dynOutGain"],
+	"gate.on" : ["Gate on", "b", "gateOn"] };	
 	
 // These messages can be displayed in the Info-Tab !!
 var message = [
 	"Message1" , "Message2", "Informations","Other Infos", "Change and Send Values here !" ];
 
+//===================== INITIAL FUNCTIONS ===========================
 
 //  initial functions
 function init() {
+
+// Insert Parameters ...
+	SelChanParams = local.parameters.addBoolParameter("Add Sel Chan Parameters", "", false);
+	ShowNames = local.parameters.addBoolParameter("Show Names", "Show Names", false);
+	ShowInfos = local.parameters.addBoolParameter("Show Infos", "Show Infos Values", false);
+	Advice = local.parameters.addStringParameter("After Changing above", "Alert","You must reload the session");
+	RequestInfo = local.values.addStringParameter("Request Action","Request Action", "Request all the Values from the Console !!");
+	UpdateAll = local.values.addTrigger("Click to Sync all", "Request all the Values from the Console !!" , false);
+	SendInfo = local.values.channels.addStringParameter("Channel Info", "Info","Change and Send Values here!");
+	Sending = local.values.channels.addTrigger("Click to send Updates", "Send Updated Values to the Console" , false);
+	Alert = local.values.channels.addStringParameter("Advice", "Alert","Be careful with this feature !!");
+	
 // insert containers...	
+	var infCont = ShowInfos.get();
+		if (infCont == true){
 	infos=local.values.addContainer("Infos");
 		infos.setCollapsed(true);	
 		for (var i = 1; i<=16; i++) {
-		infos.addStringParameter("Info "+(i), "","");}
+		infos.addStringParameter("Info "+(i), "","");} }
 		
+	var infNames = ShowNames.get();
+		if (infNames == true){	
 	names=local.values.addContainer("Names");
 		names.setCollapsed(true);	
 		for (var i = 1; i<=16; i++) {
-		names.addStringParameter("Track "+(i), "","");}
+		names.addStringParameter("Track "+(i), "",""); }		
 		names.addStringParameter("Aux USB", "","");
 		for (var i = 1; i<=4; i++) {
 		names.addStringParameter("FX Return "+(i), "","");}
 		for (var i = 1; i<=6; i++) {
 		names.addStringParameter("Bus "+(i), "","");}
-		names.addStringParameter("Main LR", "","");
+		names.addStringParameter("Main LR", "",""); }
 		
 	faders = local.values.faders.addContainer("Channel Faders");
 		faders.setCollapsed(true);
 		for (var i = 1; i<=16; i++) {
-		faders.addFloatParameter("Fader "+(i), "", 0, 0, 1);}
+		faders.addFloatParameter("Fader "+(i), "", 0, 0, 1); }
 		faders.addFloatParameter("Aux USB", "", 0, 0, 1);
 		for (var i = 1; i<=4; i++) {
 		faders.addFloatParameter("FX Return "+(i), "", 0, 0, 1);}
@@ -52,8 +114,8 @@ function init() {
 	strips = local.values.channels.addContainer("Channel"+(i));
 		var chan = local.values.channels.addContainer("Channel"+(i));
 		chan.addStringParameter("Name", "","");
-		chan.addIntParameter("Fader", "", 0, -90, 10);
-		chan.addIntParameter("Pan", "", 0, -50, 50);
+		chan.addFloatParameter("Fader", "", 0);
+		chan.addFloatParameter("Pan","", 0 , -50, 50);
 		chan.addBoolParameter("Mute", "", false);
 		chan.addBoolParameter("EQ", "", false);
 		chan.addBoolParameter("LoCut", "", false);
@@ -64,8 +126,8 @@ function init() {
 	strips = local.values.channels.addContainer("Main LR");
 		var chan = local.values.channels.addContainer("Main LR");
 		chan.addStringParameter("Name", "","");
-		chan.addIntParameter("Fader", "", 0, -90, 10);
-		chan.addIntParameter("Pan", "", 0, -50, 50);
+		chan.addFloatParameter("Fader", "", 0);
+		chan.addFloatParameter("Pan","", 0, -50, 50);
 		chan.addBoolParameter("Mute", "", false);
 		chan.addBoolParameter("EQ", "", false);
 		chan.addBoolParameter("Dyn", "", false);
@@ -75,30 +137,92 @@ function init() {
 	strips = local.values.channels.addContainer("Bus"+(i));
 		var chan = local.values.channels.addContainer("Bus"+(i));
 		chan.addStringParameter("Name", "","");
-		chan.addIntParameter("Fader", "", 0, -90, 10);
+		chan.addFloatParameter("Fader", "", 0);
 		chan.addBoolParameter("Mute", "", false);
 		chan.addBoolParameter("EQ", "", false);
 		chan.addBoolParameter("Dyn", "", false);
 		chan.setCollapsed(true);}
-
-
-	UpdateAll = local.values.addTrigger("Click to Sync all", "Initiate and Update Values from the Console !" , false);
-	SendInfo = local.values.channels.addStringParameter("Channel Info", "Info","Change and Send Values here!");
-	Sending = local.values.channels.addTrigger("Click to send Updates", "Send Updated Values" , false);
-	Alert = local.values.channels.addStringParameter("Advice", "Alert","Be careful with this feature !!");
-			
+	
+	var trig = SelChanParams.get();
+		if (trig == true){
+		selchan = local.values.selectedChannel;
+		selchan.setCollapsed(true);
+		selchan.addTrigger("Click to Sync", "" , false);
+		selchan.addTrigger("Click to Reset Sel Chan", "" , false);
+		var champs = util.getObjectProperties(selChann);
+		for (var n = 0; n < champs.length; n++) {
+			if (selChann[champs[n]][1] == "f") {
+			selchan.addFloatParameter(selChann[champs[n]][0], "", 0); }
+			if (selChann[champs[n]][1] == "fg") {
+			selchan.addFloatParameter(selChann[champs[n]][0], "", 0, -15, 15); } 
+			if (selChann[champs[n]][1] == "ff") {
+			selchan.addFloatParameter(selChann[champs[n]][0], "", 0, 0, 1); } 
+			if (selChann[champs[n]][1] == "fp") {
+			selchan.addFloatParameter(selChann[champs[n]][0], "", 0, -50, 50); }  
+			else if (selChann[champs[n]][1] == "b") {
+			selchan.addBoolParameter(selChann[champs[n]][0], "", false); }
+			else if (selChann[champs[n]][1] == "in") {
+			selchan.addIntParameter(selChann[champs[n]][0], "", 0); } 
+			else if (selChann[champs[n]][1] == "s") {
+			selchan.addStringParameter(selChann[champs[n]][0], "", ""); } } }		
 }
 
+//===================== VALUE CHANGE EVENTS===========================
+
 function moduleValueChanged(value) { 
+
+//Selected Channel >>>>
+	if (value.name == "clickToSync"){ 
+		var tar=local.values.selectedChannel.selectTarget.get();
+		var no=local.values.selectedChannel.selectNo.get();
+		if(tar=="ch" && no < 10){no = "0"+no ;} else {no=no ;}
+		if (tar=="lr") {var link = tar ;}
+		else {link = tar+"/"+no ;}		
+			local.send("/"+link+"/config/name");
+			local.send("/"+link+"/mix/fader");
+			local.send("/"+link+"/mix/pan");
+			local.send("/"+link+"/mix/on");
+			local.send("/"+link+"/eq/on");
+			local.send("/"+link+"/dyn/on");
+			local.send("/"+link+"/dyn/ratio");
+			local.send("/"+link+"/dyn/thr");
+			local.send("/"+link+"/dyn/mgain");
+			local.send("/"+link+"/gate/on");
+			local.send("/"+link+"/preamp/hpon");
+			local.send("/"+link+"/preamp/invert");
+			local.send("/"+link+"/preamp/hpf");
+		if (tar=="lr" || tar=="bus") {var c = 6 ;} else {c=4;}
+		for(var i=1; i <=c; i++) {
+			local.send("/"+link+"/eq/"+i+"/f");
+			local.send("/"+link+"/eq/"+i+"/g");
+			local.send("/"+link+"/eq/"+i+"/q");
+			local.send("/"+link+"/eq/"+i+"/type"); }		
+		}		
+//Selected Channel Reset All
+		if (value.name == "clickToResetSelChan"){
+		var champs = util.getObjectProperties(selChann);
+		for (var n = 0; n < champs.length; n++) {
+		var item = selChann[champs[n]][2] ;
+		var par = selChann[champs[n]][1];
+		if (par == "s") {
+			local.values.selectedChannel.getChild(item).set("");}
+		else if (par == "b") {
+			local.values.selectedChannel.getChild(item).set(0);}  }	 
+		}		
+//Selected Channel <<<<<
+
+
+//Sync All Channel Strips
  	if (value.name == "clickToSyncAll"){ 
  		local.send("/xinfo");
-		local.send("/status");
-		
-// you can customize and choose how many and which messages you wann show up in the "Infos-Fiels"		
+	
+// you can customize and choose how many and which messages you wann show up in the "Infos-Fiels"
+	var infCont = ShowInfos.get();
+		if (infCont == true){		
 		for(var i=0; i < message.length; i++) {
 		var n = i+10 ;
 		var text = message[i];
-		local.values.infos.getChild('Info'+n).set(text);}
+		local.values.infos.getChild('Info'+n).set(text);} }
 		
  		for(var i=1; i <=16; i++) {
  		if (i<10){n="0"+i;} else{n=i;}
@@ -157,18 +281,19 @@ function moduleValueChanged(value) {
 		
 		for(var i=1; i <=16; i++) {
 		var d = local.values.channels.getChild('Channel'+i).getChild('Fader').get();
-		if (d < -60)  {var f = (d + 90) / 480;}
-		else if (d < -30) {var f = (d + 70) / 160;}
-		else if (d < -10) {var f = (d + 50) / 80;}
+		if (d <= -60)  {var f = (d + 90) / 480;}
+		else if (d <= -30) {var f = (d + 70) / 160;}
+		else if (d <= -10) {var f = (d + 50) / 80;}
 		else if (d <= 10) {var f = (d + 30) / 40;}
+		
 		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/ch/"+n+"/mix/fader", f);}
 		
 		for(var i=1; i <=6; i++) {
 		var d = local.values.channels.getChild('Bus'+i).getChild('Fader').get();
-		if (d < -60)  {var f = (d + 90) / 480;}
-		else if (d < -30) {var f = (d + 70) / 160;}
-		else if (d < -10) {var f = (d + 50) / 80;}
+		if (d <= -60)  {var f = (d + 90) / 480;}
+		else if (d <= -30) {var f = (d + 70) / 160;}
+		else if (d <= -10) {var f = (d + 50) / 80;}
 		else if (d <= 10) {var f = (d + 30) / 40;}
 		local.send("/bus/"+i+"/mix/fader", f);}
 		
@@ -235,8 +360,12 @@ function keepAlive() {
 		
 }
 
+//=================== OSC EVENTS =============================
+
 function oscEvent(address, args) { 
 // infos
+	var infCont = ShowInfos.get();
+		if (infCont == true){
 		if (address== "/xinfo"){ 
 		local.values.infos.info1.set(address);
 		for(var i=0; i <=3; i++) {
@@ -245,40 +374,42 @@ function oscEvent(address, args) {
 		if (address== "/status"){ 
 		for(var i=0; i < 3; i++) {
 		var n=i+6 ; 
-		local.values.infos.getChild('Info'+n).set(args[i]);}  }
+		local.values.infos.getChild('Info'+n).set(args[i]);}  } }
 		
 	
-// names			
+// names
+	var infNames = ShowNames.get();
+		if (infNames == true){				
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/config/name") {
 		local.values.names.getChild('Track'+i).set(args[0]);
-		local.values.channels.getChild('Channel'+i).getChild('Name').set(args[0]);} }
+		local.values.channels.getChild('Channel'+i).getChild('Name').set(args[0]); } }
 		if (address == "/rtn/aux/config/name") {
 		local.values.names.auxUSB.set(args[0]);}
 		if (address == "/lr/config/name") {
 		local.values.names.mainLR.set(args[0]);
-		local.values.channels.mainLR.getChild('Name').set(args[0]);}
+		local.values.channels.mainLR.getChild('Name').set(args[0]); }
 		for(var i=1; i <=4; i++) {
 		if (address == "/rtn/"+i+"/config/name") {
-		local.values.names.getChild('fxReturn'+i).set(args[0]);} }
+		local.values.names.getChild('fxReturn'+i).set(args[0]); } }
 		for(var i=1; i <=6; i++) {
 		if (address == "/bus/"+i+"/config/name") {
 		local.values.names.getChild('Bus'+i).set(args[0]);
-		local.values.channels.getChild('Bus'+i).getChild('Name').set(args[0]);} }	
+		local.values.channels.getChild('Bus'+i).getChild('Name').set(args[0]); } }	 }
 // faders				
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/mix/fader") {
-		local.values.faders.channelFaders.getChild('Fader'+i).set(args[0]);} }		
+		local.values.faders.channelFaders.getChild('Fader'+i).set(args[0]); } }		
 		for(var i=1; i <=4; i++) {
 		if (address == "/rtn/"+i+"/mix/fader") {
-		local.values.faders.channelFaders.getChild('fxReturn'+i).set(args[0]);} }		
+		local.values.faders.channelFaders.getChild('fxReturn'+i).set(args[0]); } }		
 		if (address == "/rtn/aux/mix/fader") {
 		local.values.faders.channelFaders.auxUSB.set(args[0]);}		
 		for(var i=1; i <=6; i++) {
 		if (address == "/bus/"+i+"/mix/fader") {
-		local.values.faders.busDCAFaders.getChild('Bus'+i).set(args[0]);} }
+		local.values.faders.busDCAFaders.getChild('Bus'+i).set(args[0]); } }
 		if (address == "/lr/mix/fader") {
 		local.values.faders.busDCAFaders.mainLR.set(args[0]);}	
 		for(var i=1; i <=4; i++) {
@@ -294,6 +425,7 @@ function oscEvent(address, args) {
 		else if(f >=0.25) {var d=(f * 80)-50;}
 		else if(f >=0.0625) {var d=(f * 160)-70;}
 		else if (f >= 0.0) {var d=(f * 480)-90;}
+		d= (Math.round(d*10))/10;
 		local.values.channels.getChild('Channel'+i).getChild('Fader').set(d);} }		
 		if (address == "/lr/mix/fader") {
 		var f =args[0];	
@@ -301,6 +433,7 @@ function oscEvent(address, args) {
 		else if(f >=0.25) {var d=(f * 80)-50;}
 		else if(f >=0.0625) {var d=(f * 160)-70;}
 		else if (f >= 0.0) {var d=(f * 480)-90;}
+		d= (Math.round(d*10))/10;
 		local.values.channels.mainLR.fader.set(d);}		
 		for(var i=1; i <=6; i++) {
 		if (address == "/bus/"+i+"/mix/fader") {
@@ -308,50 +441,53 @@ function oscEvent(address, args) {
 		if (f >= 0.5) {var d=(f * 40)-30;}
 		else if(f >=0.25) {var d=(f * 80)-50;}
 		else if(f >=0.0625) {var d=(f * 160)-70;}
-		else if (f >= 0.0) {var d=(f * 480)-90;}		
+		else if (f >= 0.0) {var d=(f * 480)-90;}
+		d= (Math.round(d*10))/10;		
 		local.values.channels.getChild('Bus'+i).getChild('Fader').set(d);} }		
 //Pan				
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/mix/pan") {
-		var p = (args[0]*100-50);
-		local.values.channels.getChild('Channel'+i).getChild('Pan').set(p);} }
+		var pan = Math.round((args[0]*100-50));
+		
+		local.values.channels.getChild('Channel'+i).getChild('Pan').set(pan); } }
 		if (address == "/lr/mix/pan") {
-		var p = (args[0]*100-50);
-		local.values.channels.mainLR.pan.set(p);}			
+		var pan = Math.round((args[0]*100-50));
+		
+		local.values.channels.mainLR.pan.set(pan);}			
 //Mute					
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/mix/on") {
 		var on = 1-(args[0]);
-		local.values.channels.getChild('Channel'+i).getChild('Mute').set(on);} }
+		local.values.channels.getChild('Channel'+i).getChild('Mute').set(on); } }
 		if (address == "/lr/mix/on") {
 		var on = 1-(args[0]);
 		local.values.channels.mainLR.mute.set(1-args[0]);}
 		for(var i=1; i <=6; i++) {
 		if (address == "/bus/"+i+"/mix/on") {
 		var on = 1-(args[0]);
-		local.values.channels.getChild('Bus'+i).getChild('Mute').set(on);} }		
+		local.values.channels.getChild('Bus'+i).getChild('Mute').set(on); } }		
 //EQ		
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/eq/on") {
-		local.values.channels.getChild('Channel'+i).getChild('EQ').set(args[0]);} }
+		local.values.channels.getChild('Channel'+i).getChild('EQ').set(args[0]); } }
 		if (address == "/lr/eq/on") {
 		local.values.channels.mainLR.eq.set(args[0]);}
 		for(var i=1; i <=6; i++) {
 		if (address == "/bus/"+i+"/eq/on") {
-		local.values.channels.getChild('Bus'+i).getChild('EQ').set(args[0]);} }		
+		local.values.channels.getChild('Bus'+i).getChild('EQ').set(args[0]); } }		
 //LoCut			
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/preamp/hpon") {
-		local.values.channels.getChild('Channel'+i).getChild('LoCut').set(args[0]);} }			
+		local.values.channels.getChild('Channel'+i).getChild('LoCut').set(args[0]); } }			
 //Dyn				
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/dyn/on") {
-		local.values.channels.getChild('Channel'+i).getChild('Dyn').set(args[0]);} }
+		local.values.channels.getChild('Channel'+i).getChild('Dyn').set(args[0]); } }
 		if (address == "/lr/dyn/on") {
 		local.values.channels.mainLR.dyn.set(args[0]);}	
 		for(var i=1; i <=6; i++) {
@@ -362,10 +498,386 @@ function oscEvent(address, args) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/gate/on") {
 		local.values.channels.getChild('Channel'+i).getChild('Gate').set(args[0]);} }
+		
+//Selected Channel
+var trig = SelChanParams.get();
+		if (trig == true){
+		
+		var tar=local.values.selectedChannel.selectTarget.get();
+		var no=local.values.selectedChannel.selectNo.get();
+		if(tar=="ch" && no < 10){no = "0"+no ;} else {no=no ;}
+		if (tar=="lr") {var link = tar ;}
+		else {link = tar+"/"+no ;}
+		
+//Selected Channel Name, Fader etc
+		if (address == "/"+link+"/config/name") {
+		local.values.selectedChannel.label.set(args[0]);}
+		if (address == "/"+link+"/mix/fader") {
+		var f =args[0];	
+		if (f >= 0.5) {var d=(f * 40)-30;}
+		else if(f >=0.25 && f <0.5) {var d=(f * 80)-50;}
+		else if(f >=0.0625 && f <0.25) {var d=(f * 160)-70;}
+		else if (f >= 0.0 && f <0.0625) {var d=(f * 480)-90;}
+		d= (Math.round(d*10))/10;
+		local.values.selectedChannel.fader.set(d+" db");}
+//Pan
+		if (address == "/"+link+"/mix/pan") {
+		var pan = Math.round(args[0]*100-50) ;
+		if (pan == 0){pan = "C";}
+		else if (pan < 0){pan = pan+"  L";}
+		else if (pan > 0){pan = pan+"  R";}
+		local.values.selectedChannel.pan.set(pan);}
+//ST, EQ, Dyn, Gate-on
+		if (address == "/"+link+"/mix/on") {
+		var on = 1-args[0] ;
+		local.values.selectedChannel.mute.set(on);}
+		if (address == "/"+link+"/eq/on") {
+		local.values.selectedChannel.eqOn.set(args[0]);}
+		if (address == "/"+link+"/dyn/on") {
+		local.values.selectedChannel.dynOn.set(args[0]);}
+		if (address == "/"+link+"/dyn/ratio") {
+		var r = args[0];
+		if (r==0){t="1.1 : 1";}
+		else if (r==1){t="1.3 : 1";}
+		else if (r==2){t="1.5 : 1";}
+		else if (r==3){t="2.0 : 1";}
+		else if (r==4){t="2.5 : 1";}
+		else if (r==5){t="3.0 : 1";}
+		else if (r==6){t="4.0 : 1";}
+		else if (r==7){t="5.0 : 1";}
+		else if (r==8){t="7.0 : 1";}
+		else if (r==9){t="10 : 1";}
+		else if (r==10){t="20 : 1";}
+		else if (r==11){t="100 : 1";}
+		local.values.selectedChannel.dynRatio.set(t);}
+		if (address == "/"+link+"/dyn/thr") {
+		var thr = Math.round((args[0]-1)*600)/10;
+		local.values.selectedChannel.dynThreshold.set(thr+" db");}
+		if (address == "/"+link+"/dyn/mgain") {
+		var g =Math.round(args[0]*240)/10 ;
+		local.values.selectedChannel.dynOutGain.set(g+" db");}
+		if (address == "/"+link+"/gate/on") {
+		local.values.selectedChannel.gateOn.set(args[0]);}
+//LoCut
+		if (address == "/"+link+"/preamp/hpon") {
+		local.values.selectedChannel.loCutOn.set(args[0]);}
+		if (address == "/"+link+"/preamp/invert") {	
+		local.values.selectedChannel.invert.set(args[0]);}
+		if (address == "/"+link+"/preamp/hpf") {
+		var f= args[0];
+		 if (f >=0.0000 && f <0.0300) { hp= 20 ;}
+ 		else if (f >=0.0300 && f <0.0700) { hp= 22 ;}
+		else if (f >=0.0700 && f <0.0900) { hp= 25 ;}
+		else if (f >=0.0900 && f <0.1000) { hp= 27 ;}
+		else if (f >=0.1000 && f <0.1200) { hp= 28 ;}
+		else if (f >=0.1200 && f <0.1600) { hp= 30 ;}
+		else if (f >=0.1600 && f <0.1800) { hp= 33 ;}
+		else if (f >=0.1800 && f <0.2000) { hp= 35 ;}
+		else if (f >=0.2000 && f <0.2200) { hp= 38 ;}
+		else if (f >=0.2200 && f <0.2400) { hp= 40 ;}
+		else if (f >=0.2400 && f <0.2500) { hp= 42 ;}
+		else if (f >=0.2500 && f <0.2700) { hp= 44 ;}
+		else if (f >=0.2700 && f <0.2800) { hp= 46 ;}
+		else if (f >=0.2800 && f <0.3000) { hp= 48 ;}
+		else if (f >=0.3000 && f <0.3100) { hp= 50 ;}
+		else if (f >=0.3100 && f <0.3300) { hp= 52 ;}
+		else if (f >=0.3300 && f <0.3400) { hp= 55 ;}
+		else if (f >=0.3400 && f <0.3600) { hp= 57 ;}
+		else if (f >=0.3600 && f <0.3800) { hp= 61 ;}
+		else if (f >=0.3800 && f <0.4000) { hp= 64 ;}
+		else if (f >=0.4000 && f <0.4100) { hp= 68 ;}
+		else if (f >=0.4100 && f <0.4300) { hp= 70 ;}
+		else if (f >=0.4300 && f <0.4400) { hp= 75 ;}
+		else if (f >=0.4400 && f <0.4500) { hp= 77 ;}
+		else if (f >=0.4500 && f <0.4700) { hp= 79 ;}
+		else if (f >=0.4700 && f <0.4800) { hp= 84 ;}
+		else if (f >=0.4800 && f <0.4900) { hp= 87 ;}
+		else if (f >=0.4900 && f <0.5000) { hp= 89 ;}
+		else if (f >=0.5000 && f <0.5100) { hp= 92 ;}
+		else if (f >=0.5100 && f <0.5200) { hp= 95 ;}
+		else if (f >=0.5200 && f <0.5300) { hp= 98 ;}
+		else if (f >=0.5300 && f <0.5400) { hp= 101 ;}
+		else if (f >=0.5400 && f <0.5500) { hp= 104 ;}
+		else if (f >=0.5500 && f <0.5600) { hp= 107 ;}
+		else if (f >=0.5600 && f <0.5700) { hp= 110 ;}
+		else if (f >=0.5700 && f <0.5900) { hp= 114 ;}
+		else if (f >=0.5900 && f <0.6000) { hp= 121 ;}
+		else if (f >=0.6000 && f <0.6100) { hp= 124 ;}
+		else if (f >=0.6100 && f <0.6200) { hp= 128 ;}
+		else if (f >=0.6200 && f <0.6300) { hp= 132 ;}
+		else if (f >=0.6300 && f <0.6400) { hp= 136 ;}
+		else if (f >=0.6400 && f <0.6500) { hp= 140 ;}
+		else if (f >=0.6500 && f <0.6600) { hp= 144 ;}
+		else if (f >=0.6600 && f <0.6700) { hp= 149 ;}
+		else if (f >=0.6700 && f <0.6800) { hp= 153 ;}
+		else if (f >=0.6800 && f <0.6900) { hp= 158 ;}
+		else if (f >=0.6900 && f <0.7000) { hp= 163 ;}
+		else if (f >=0.7000 && f <0.7100) { hp= 168 ;}
+		else if (f >=0.7100 && f <0.7200) { hp= 173 ;}
+		else if (f >=0.7200 && f <0.7300) { hp= 178 ;}
+		else if (f >=0.7300 && f <0.7400) { hp= 184 ;}
+		else if (f >=0.7400 && f <0.7500) { hp= 189 ;}
+		else if (f >=0.7500 && f <0.7600) { hp= 195 ;}
+		else if (f >=0.7600 && f <0.7700) { hp= 201 ;}
+		else if (f >=0.7700 && f <0.7800) { hp= 207 ;}
+		else if (f >=0.7800 && f <0.7900) { hp= 213 ;}
+		else if (f >=0.7900 && f <0.8000) { hp= 220 ;}
+		else if (f >=0.8000 && f <0.8100) { hp= 226 ;}
+		else if (f >=0.8100 && f <0.8200) { hp= 233 ;}
+		else if (f >=0.8200 && f <0.8300) { hp= 240 ;}
+		else if (f >=0.8300 && f <0.8400) { hp= 248 ;}
+		else if (f >=0.8400 && f <0.8500) { hp= 255 ;}
+		else if (f >=0.8500 && f <0.8600) { hp= 263 ;}
+		else if (f >=0.8600 && f <0.8700) { hp= 271 ;}
+		else if (f >=0.8700 && f <0.8800) { hp= 279 ;}
+		else if (f >=0.8800 && f <0.8900) { hp= 288 ;}
+		else if (f >=0.8900 && f <0.9000) { hp= 296 ;}
+		else if (f >=0.9000 && f <0.9100) { hp= 305 ;}
+		else if (f >=0.9100 && f <0.9200) { hp= 315 ;}
+		else if (f >=0.9200 && f <0.9300) { hp= 324 ;}
+		else if (f >=0.9300 && f <0.9400) { hp= 334 ;}
+		else if (f >=0.9400 && f <0.9500) { hp= 344 ;}
+		else if (f >=0.9500 && f <0.9600) { hp= 355 ;}
+		else if (f >=0.9600 && f <0.9700) { hp= 366 ;}
+		else if (f >=0.9700 && f <0.9800) { hp= 377 ;}
+		else if (f >=0.9800 && f <0.9900) { hp= 388 ;}
+		else if (f >=0.9900 && f <=1.0) { hp= 400 ;} 	
+		local.values.selectedChannel.loCutFreq.set(hp+"  Hz");}		
+		
+//Selected Channel EQ	
+		if (tar=="lr" || tar=="bus") {var c = 6 ;} else {c=4;}	
+		for(var i=1; i <= c; i++) {
+		if (address == "/"+link+"/eq/"+i+"/g") {
+		var g = Math.round((args[0]-0.5)*300)/10 ;
+		local.values.selectedChannel.getChild('GainEq'+i).set(g+" db");}
+		if (address == "/"+link+"/eq/"+i+"/f") {		
+		var f= args[0]; 		
+	if(n=0){var tx= 20 ; }
+		else if (f >=0.0333 && f <0.05){var tx= 26 ; }
+		else if (f >=0.05 && f <0.0583){var tx= 29 ; }
+		else if (f >=0.0583 && f <0.075){var tx= 30 ; }
+		else if (f >=0.075 && f <0.0917){var tx= 34 ; }
+		else if (f >=0.0917 && f <0.1){var tx= 38 ; }
+		else if (f >=0.1 && f <0.1083){var tx= 40 ; }
+		else if (f >=0.1083 && f <0.1167){var tx= 43 ; }
+		else if (f >=0.1167 && f <0.125){var tx= 45 ; }
+		else if (f >=0.125 && f <0.1333){var tx= 48 ; }
+		else if (f >=0.1333 && f <0.1417){var tx= 51 ; }
+		else if (f >=0.1417 && f <0.15){var tx= 54 ; }
+		else if (f >=0.15 && f <0.1583){var tx= 57 ; }
+		else if (f >=0.1583 && f <0.1667){var tx= 60 ; }
+		else if (f >=0.1667 && f <0.175){var tx= 64 ; }
+		else if (f >=0.175 && f <0.1833){var tx= 67 ; }
+		else if (f >=0.1833 && f <0.1917){var tx= 71 ; }
+		else if (f >=0.1917 && f <0.2){var tx= 76 ; }
+		else if (f >=0.2 && f <0.2083){var tx= 80 ; }
+		else if (f >=0.2083 && f <0.2167){var tx= 85 ; }
+		else if (f >=0.2167 && f <0.225){var tx= 90 ; }
+		else if (f >=0.225 && f <0.2333){var tx= 95 ; }
+		else if (f >=0.2333 && f <0.2417){var tx= 101 ; }
+		else if (f >=0.2417 && f <0.25){var tx= 107 ; }
+		else if (f >=0.25 && f <0.2583){var tx= 113 ; }
+		else if (f >=0.2583 && f <0.2667){var tx= 120 ; }
+		else if (f >=0.2667 && f <0.275){var tx= 127 ; }
+		else if (f >=0.275 && f <0.2833){var tx= 134 ; }
+		else if (f >=0.2833 && f <0.2917){var tx= 142 ; }
+		else if (f >=0.2917 && f <0.3){var tx= 150 ; }
+		else if (f >=0.3 && f <0.3083){var tx= 159 ; }
+		else if (f >=0.3083 && f <0.3167){var tx= 169 ; }
+		else if (f >=0.3167 && f <0.325){var tx= 179 ; }
+		else if (f >=0.325 && f <0.3333){var tx= 189 ; }
+		else if (f >=0.3333 && f <0.3417){var tx= 200 ; }
+		else if (f >=0.3417 && f <0.35){var tx= 212 ; }
+		else if (f >=0.35 && f <0.3583){var tx= 225 ; }
+		else if (f >=0.3583 && f <0.3667){var tx= 238 ; }
+		else if (f >=0.3667 && f <0.375){var tx= 252 ; }
+		else if (f >=0.375 && f <0.3833){var tx= 267 ; }
+		else if (f >=0.3833 && f <0.3917){var tx= 283 ; }
+		else if (f >=0.3917 && f <0.4){var tx= 300 ; }
+		else if (f >=0.4 && f <0.4083){var tx= 317 ; }
+		else if (f >=0.4083 && f <0.4167){var tx= 336 ; }
+		else if (f >=0.4167 && f <0.425){var tx= 356 ; }
+		else if (f >=0.425 && f <0.4333){var tx= 377 ; }
+		else if (f >=0.4333 && f <0.4417){var tx= 400 ; }
+		else if (f >=0.4417 && f <0.45){var tx= 423 ; }
+		else if (f >=0.45 && f <0.4583){var tx= 448 ; }
+		else if (f >=0.4583 && f <0.4667){var tx= 475 ; }
+		else if (f >=0.4667 && f <0.475){var tx= 503 ; }
+		else if (f >=0.475 && f <0.4833){var tx= 533 ; }
+		else if (f >=0.4833 && f <0.4917){var tx= 564 ; }
+		else if (f >=0.4917 && f <0.5){var tx= 598 ; }
+		else if (f >=0.5 && f <0.5083){var tx= 633 ; }
+		else if (f >=0.5083 && f <0.5167){var tx= 670 ; }
+		else if (f >=0.5167 && f <0.525){var tx= 710 ; }
+		else if (f >=0.525 && f <0.5333){var tx= 752 ; }
+		else if (f >=0.5333 && f <0.5417){var tx= 797 ; }
+		else if (f >=0.5417 && f <0.55){var tx= 844 ; }
+		else if (f >=0.55 && f <0.5583){var tx= 894 ; }
+		else if (f >=0.5583 && f <0.5667){var tx= 947 ; }
+		else if (f >=0.5667 && f <0.575){var tx= 1000 ; }
+		else if (f >=0.575 && f <0.5833){var tx= 1060 ; }
+		else if (f >=0.5833 && f <0.5917){var tx= 1120 ; }
+		else if (f >=0.5917 && f <0.6){var tx= 1190 ; }
+		else if (f >=0.6 && f <0.6083){var tx= 1260 ; }
+		else if (f >=0.6083 && f <0.6167){var tx= 1330 ; }
+		else if (f >=0.6167 && f <0.625){var tx= 1410 ; }
+		else if (f >=0.625 && f <0.6333){var tx= 1490 ; }
+		else if (f >=0.6333 && f <0.6417){var tx= 1580 ; }
+		else if (f >=0.6417 && f <0.65){var tx= 1680 ; }
+		else if (f >=0.65 && f <0.6583){var tx= 1780 ; }
+		else if (f >=0.6583 && f <0.6667){var tx= 1880 ; }
+		else if (f >=0.6667 && f <0.675){var tx= 2000 ; }
+		else if (f >=0.675 && f <0.6833){var tx= 2110 ; }
+		else if (f >=0.6833 && f <0.6917){var tx= 2240 ; }
+		else if (f >=0.6917 && f <0.7){var tx= 2370 ; }
+		else if (f >=0.7 && f <0.7083){var tx= 2510 ; }
+		else if (f >=0.7083 && f <0.7167){var tx= 2660 ; }
+		else if (f >=0.7167 && f <0.725){var tx= 2820 ; }
+		else if (f >=0.725 && f <0.7333){var tx= 2990 ; }
+		else if (f >=0.7333 && f <0.7417){var tx= 3160 ; }
+		else if (f >=0.7417 && f <0.75){var tx= 3350 ; }
+		else if (f >=0.75 && f <0.7583){var tx= 3550 ; }
+		else if (f >=0.7583 && f <0.7667){var tx= 3760 ; }
+		else if (f >=0.7667 && f <0.775){var tx= 3990 ; }
+		else if (f >=0.775 && f <0.7833){var tx= 4220 ; }
+		else if (f >=0.7833 && f <0.7917){var tx= 4470 ; }
+		else if (f >=0.7917 && f <0.8){var tx= 4740 ; }
+		else if (f >=0.8 && f <0.8083){var tx= 5020 ; }
+		else if (f >=0.8083 && f <0.8167){var tx= 5320 ; }
+		else if (f >=0.8167 && f <0.825){var tx= 5630 ; }
+		else if (f >=0.825 && f <0.8333){var tx= 5970 ; }
+		else if (f >=0.8333 && f <0.8417){var tx= 6320 ; }
+		else if (f >=0.8417 && f <0.85){var tx= 6690 ; }
+		else if (f >=0.85 && f <0.8583){var tx= 7090 ; }
+		else if (f >=0.8583 && f <0.8667){var tx= 7510 ; }
+		else if (f >=0.8667 && f <0.875){var tx= 7960 ; }
+		else if (f >=0.875 && f <0.8833){var tx= 8430 ; }
+		else if (f >=0.8833 && f <0.8917){var tx= 8930 ; }
+		else if (f >=0.8917 && f <0.9){var tx= 9460 ; }
+		else if (f >=0.9 && f <0.9083){var tx= 10020 ; }
+		else if (f >=0.9083 && f <0.9167){var tx= 10610 ; }
+		else if (f >=0.9167 && f <0.925){var tx= 11240 ; }
+		else if (f >=0.925 && f <0.9333){var tx= 11910 ; }
+		else if (f >=0.9333 && f <0.9417){var tx= 12610 ; }
+		else if (f >=0.9417 && f <0.95){var tx= 13360 ; }
+		else if (f >=0.95 && f <0.9583){var tx= 14150 ; }
+		else if (f >=0.9583 && f <0.9667){var tx= 14990 ; }
+		else if (f >=0.9667 && f <0.975){var tx= 15880 ; }
+		else if (f >=0.975 && f <0.9833){var tx= 16820 ; }
+		else if (f >=0.9833 && f <0.9917){var tx= 17820 ; }
+		else if (f >=0.9917 && f <0.999){var tx= 18880 ; }
+		else if (f = 0.999){var tx= 20000 ; }		
+		local.values.selectedChannel.getChild('FreqEq'+i).set(tx+"  Hz");}
+		
+		if (address == "/"+link+"/eq/"+i+"/q") {
+		var l = args[0];
+
+	if (l >=0.0 && l <0.0141) { q= 10.0 ;}
+		else if (l >=0.0141 && l <0.0282) { q= 9.5  ;}
+		else if (l >=0.0282 && l <0.0423) { q= 9.1  ;}
+		else if (l >=0.0423 && l <0.0563) { q= 8.6  ;}
+		else if (l >=0.0563 && l <0.0704) { q= 8.2  ;}
+		else if (l >=0.0704 && l <0.0845) { q= 7.8  ;}
+		else if (l >=0.0845 && l <0.0986) { q= 7.4  ;}
+		else if (l >=0.0986 && l <0.1127) { q= 7.1  ;}
+		else if (l >=0.1127 && l <0.1268) { q= 6.7  ;}
+		else if (l >=0.1268 && l <0.1408) { q= 6.4  ;}
+		else if (l >=0.1408 && l <0.1549) { q= 6.1  ;}
+		else if (l >=0.1549 && l <0.1690) { q= 5.8  ;}
+		else if (l >=0.1690 && l <0.1831) { q= 5.5  ;}
+		else if (l >=0.1831 && l <0.1972) { q= 5.3  ;}
+		else if (l >=0.1972 && l <0.2113) { q= 5.0  ;}
+		else if (l >=0.2113 && l <0.2254) { q= 4.8  ;}
+		else if (l >=0.2254 && l <0.2394) { q= 4.5  ;}
+		else if (l >=0.2394 && l <0.2535) { q= 4.3  ;}
+		else if (l >=0.2535 && l <0.2676) { q= 4.1  ;}
+		else if (l >=0.2676 && l <0.2817) { q= 3.9  ;}
+		else if (l >=0.2817 && l <0.2958) { q= 3.7  ;}
+		else if (l >=0.2958 && l <0.3099) { q= 3.5  ;}
+		else if (l >=0.3099 && l <0.3239) { q= 3.4  ;}
+		else if (l >=0.3239 && l <0.3380 ) { q= 3.2  ;}
+		else if (l >=0.3380  && l <0.3521) { q= 3.1 ;}
+		else if (l >=0.3521 && l <0.3662) { q= 2.9  ;}
+		else if (l >=0.3662 && l <0.3803) { q= 2.8  ;}
+		else if (l >=0.3803 && l <0.3944) { q= 2.6  ;}
+		else if (l >=0.3944 && l <0.4085) { q= 2.5  ;}
+		else if (l >=0.4085 && l <0.4225) { q= 2.4  ;}
+		else if (l >=0.4225 && l <0.4366) { q= 2.3  ;}
+		else if (l >=0.4366 && l <0.4507) { q= 2.2  ;}
+		else if (l >=0.4507 && l <0.4648) { q= 2.1  ;}
+		else if (l >=0.4648 && l <0.4789) { q= 2.0  ;}
+		else if (l >=0.4789 && l <0.4930) { q= 1.9  ;}
+		else if (l >=0.4930 && l <0.5070) { q= 1.8  ;}
+		else if (l >=0.5070 && l <0.5211) { q= 1.7  ;}
+		else if (l >=0.5211 && l <0.5352) { q= 1.6  ;}
+		else if (l >=0.5352 && l <0.5634) { q= 1.5  ;}
+		else if (l >=0.5634 && l <0.5775) { q= 1.4  ;}
+		else if (l >=0.5775 && l <0.5915) { q= 1.3  ;}
+		else if (l >=0.5915 && l <0.6056) { q= 1.3  ;}
+		else if (l >=0.6056 && l <0.6197) { q= 1.2  ;}
+		else if (l >=0.6197 && l <0.6479) { q= 1.1  ;}
+		else if (l >=0.6479 && l <0.6761) { q= 1.0  ;}
+		else if (l >=0.6761 && l <0.7042) { q= 0.9  ;}
+		else if (l >=0.7042 && l <0.7465) { q= 0.8  ;}
+		else if (l >=0.7465 && l <0.7887) { q= 0.7  ;}
+		else if (l >=0.7887 && l <0.8310) { q= 0.6  ;}
+		else if (l >=0.8310 && l <0.8873) { q= 0.5  ;}
+		else if (l >=0.8873 && l <0.9577) { q= 0.4  ;}
+		else if (l >=0.9577 && l <1.0) { q= 0.3  ;}
+
+		local.values.selectedChannel.getChild('QEq'+i).set(q+"");}
+		
+		if (address == "/"+link+"/eq/"+i+"/type") {
+		var filt = args[0];
+		if (filt == 0){var txt= "LoCut";}
+		else if (filt == 1){var txt= "Lo-Shelf";}
+		else if (filt == 2){var txt= "PEQ";}
+		else if (filt == 3){var txt= "VEQ";}
+		else if (filt == 4){var txt= "Hi-Shelf";}
+		else if (filt == 5){var txt= "HiCut";}
+		local.values.selectedChannel.getChild('typeEq'+i).set(txt);} } }
+		
+//Selected Channel Special Resets
+		if (tar=="lr" || tar=="bus") {
+		local.values.selectedChannel.loCutOn.set(0);
+		local.values.selectedChannel.gateOn.set(0);
+		local.values.selectedChannel.invert.set(0);
+		local.values.selectedChannel.loCutFreq.set("");}
+		
+		if (tar=="ch" || tar=="rtn") {
+		for(var i=5; i <= 6; i++) {
+		local.values.selectedChannel.getChild('GainEq'+i).set("");
+		local.values.selectedChannel.getChild('FreqEq'+i).set("");
+		local.values.selectedChannel.getChild('QEq'+i).set("");
+		local.values.selectedChannel.getChild('TypeEq'+i).set("");}	 }
+		
+		if (tar=="rtn") {	
+		local.values.selectedChannel.loCutOn.set(0);
+		local.values.selectedChannel.dynOn.set(0);
+		local.values.selectedChannel.gateOn.set(0);
+		local.values.selectedChannel.invert.set(0);
+		local.values.selectedChannel.dynThreshold.set("");
+		local.values.selectedChannel.dynRatio.set("");
+		local.values.selectedChannel.dynOutGain.set("");}
+		
+		if (tar=="fxsend") {	
+		local.values.selectedChannel.loCutOn.set(0);
+		local.values.selectedChannel.dynOn.set(0);
+		local.values.selectedChannel.gateOn.set(0);
+		local.values.selectedChannel.invert.set(0);
+		local.values.selectedChannel.eqOn.set(0);
+		local.values.selectedChannel.pan.set("");
+		local.values.selectedChannel.loCutFreq.set("");
+		for(var i=1; i <= 6; i++) {
+		local.values.selectedChannel.getChild('GainEq'+i).set("");
+		local.values.selectedChannel.getChild('FreqEq'+i).set("");
+		local.values.selectedChannel.getChild('QEq'+i).set("");
+		local.values.selectedChannel.getChild('TypeEq'+i).set("");}}
 }
 
+//=================== REQUESTS =============================
 
-// Requests
+//Requests
 function request_names() {
  		for(var i=1; i <10; i++) {
 		local.send("/ch/0"+i+"/config/name");}
@@ -440,8 +952,8 @@ function request_all() {
 		local.send("/subscribe","/ch/"+i+"/preamp/hpon");}  		 
 }
 
-// Regular Functions
-//  Chan Config
+// ========================== REGULAR FUCNTIONS =============================
+//  Chan Config ------>>>>>
 
 function config_name(targetType, targetNumber, val) {
 	if (targetType == "ch"){
@@ -461,7 +973,7 @@ function channel_source(targetNumber, val) {
 	local.send("/ch/"+targetNumber+"/config/insrc", val);
 }
 
-//  Channel Actions
+//  Channel Action ------>>>>>s
 
 function ch_automix_group(targetNumber, val) {
 	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } 
@@ -476,7 +988,7 @@ function ch_automix_gain(targetNumber, val) {
 
 
 
-//  Preamp
+//  Preamp ------>>>>>
 
 function preamp_gain(targetType, targetNumber, val) {
 	
@@ -498,7 +1010,7 @@ function preamp_invert(targetType, targetNumber, val) {
 	local.send("/"+targetType+"/"+targetNumber+"/preamp/invert", val);
 }
 
-//  Channel
+//  Channel ------>>>>>
 
 function mix_fader(targetType, targetNumber, val) {
 	
@@ -553,7 +1065,8 @@ function mix_send_level(targetType, targetNumber, mix, val) {
 	{local.send("/"+targetType+"/"+targetNumber+"/mix/"+mix+"/level", val); } }
 }
 
-//  Gate
+//  Gate ------>>>>>
+
 function gate_on(targetType, targetNumber, val) {
 	if (targetType == "ch"){
 	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
@@ -629,7 +1142,7 @@ function gate_keysrc(targetType, targetNumber, val) {
 	local.send("/"+targetType+"/"+targetNumber+"/gate/keysrc", val);
 }
 
-//  Compressor
+//  Compressor ------>>>>>
 
 function ch_comp_full(targetType, targetNumber, val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13 ) { 
 	if (targetType == "ch"){
@@ -786,7 +1299,7 @@ function comp_keysrc(targetType, targetNumber, val) {
 	local.send("/"+targetType+"/"+targetNumber+"/dyn/keysrc", val);
 }
 
-//  Insert
+//  Insert ------>>>>>
 
 function insert_on(targetType, targetNumber, val) {
 	if (targetType == "ch"){
@@ -806,7 +1319,7 @@ function insert_sel(targetType, targetNumber, val) {
 	local.send("/"+targetType+"/"+targetNumber+"/insert/fxslot", val);
 }
 
-//  EQ
+//  EQ ------>>>>>
 
 function full_ch_eq (targetType, targetNumber, val, val1, band, val2, val3, val4, val5) {
 	if (targetType == "ch"){
@@ -868,7 +1381,7 @@ function eq_q(targetType, targetNumber, band, val) {
 	local.send("/"+targetType+"/"+targetNumber+"/eq/"+band+"/q", val);
 }
 
-// Hi-Pass
+// Hi-Pass ------>>>>>
 
 function hipass (targetType, targetNumber, val1, val2) {
 	if (targetType == "ch"){
@@ -1011,7 +1524,7 @@ function lr_comp_keysrc(targetType, val) {
 	local.send("/"+targetType+"/dyn/keysrc", val);
 }
 
-//Player
+//Player ------>>>>>
 
 function player_actions (val) {
 	local.send("/-stat/tape/state", val);
