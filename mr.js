@@ -143,7 +143,7 @@ function init() {
 	SelChanParams = local.parameters.addBoolParameter("Show SelChan Values", "", true);
 	ShowNames = local.parameters.addBoolParameter("Show Names", "Show Names", true);
 	ShowInfos = local.parameters.addBoolParameter("Show Infos", "Show Informations", false);
-	ShowFaders = local.parameters.addBoolParameter("Show Fader Values", "Show Fader Values", true);
+	ShowFaders = local.parameters.addBoolParameter("Show Fader Values", "Show Fader Values", false);
 	AllowSend = local.parameters.addBoolParameter("Allow SendToConsole", "Allow Send-to-Console", false);
 //	Advice = local.parameters.addStringParameter("After Changing above", "Alert","You must reload the session");
 	RequestInfo = local.values.addStringParameter("Request Sync","Request Action", "Request and Sync");
@@ -279,7 +279,7 @@ function moduleValueChanged(value) {
 			local.values.selectedChannel.getChild(item).set(0);}  }	 
 		}		
 
-// >>>>>>>>>>>>>>>>>> SEND DATA TO THE CONSOLE <<<<<<<<<<<<<<<<<<<<<<<
+// >>>>>>>>>>>>>>>>>> REQUEST DATA FOR SELECTED CHANNEL <<<<<<<<<<<<<<<<<<<<<<<
 //Selected Channel >>>>
 	if (value.name == "clickToSync"){ 
 		var targ=local.values.selectedChannel.selectTarget.get();
@@ -377,13 +377,19 @@ function moduleValueChanged(value) {
 		local.send("/subscribe","/bus/"+i+"/mix/on");
 		local.send("/subscribe","/bus/"+i+"/eq/on");
 		local.send("/subscribe","/bus/"+i+"/dyn/on");}    }	
-		
+
+// >>>>>>>>>>>>>>>>>> SEND DATA TO THE CONSOLE <<<<<<<<<<<<<<<<<<<<<<<		
 	if (value.name == "clickToSendUpdates"){
 	if (AllowSend.get()) {
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Name').get();
  		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/ch/"+n+"/config/name", val);}
+		for(var i=1; i <=6; i++) {
+		var val = local.values.channels.getChild('Bus'+i).getChild('Name').get();
+		local.send("/bus/"+i+"/config/name", val);}
+		var val = local.values.channels.mainLR.getChild('Name').get();
+		local.send("/lr/config/name", val);
 		
 		for(var i=1; i <=16; i++) {
 		var d = local.values.channels.getChild('Channel'+i).getChild('Fader').get();
