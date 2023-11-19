@@ -19,7 +19,7 @@ But this concerns only the container **"Channels"** !
 The best way to proceed is :  
 Before sending any data from Chataigne to the console by the Channel-Container's "Form-Fields", first request all the data from the console by **"Click To Sync All"**. This action is "request only"; than make eventually changes in the Channels and send them back to the console by **"Click To Send Updates"**.
 Please note also that the "Click to Sync All" Feature will request Data from the console by a "subscribe-function" that will be active for about 10 seconds, and you cannot change values in the fields during these 10 seconds...   
-The "Send-to-Console-Feature" is limited to the **Channels Container** only - (just to avoid risks and confusion); any other "Value-Tab" does not send any Value to the console !
+The "Send-to-Console-Feature" is limited to the Channels Container only - (just to avoid risks and confusion); any other "Value-Tab" does not send any Value to the console !
 Please use "States" and "Actions" to control the console properly !
 
 To get Feedback from the console in a general way, "Listen to Feedback" in the Parameter-Field must be activated ! (it is "ON" by default when inserting a MR-Module).   
