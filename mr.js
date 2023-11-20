@@ -73,14 +73,19 @@ var selChann = {
 	"eq.b6.q" : ["Q Eq 6", "s", "qEq6"],
 	"dyn.on" : ["Dyn on", "b", "dynOn"],	
 	"dyn.ratio" : ["Dyn Ratio", "s", "dynRatio"],
-	"dyn.threshold" : ["Dyn Threshold", "s", "dynThreshold"],
+	"dyn.thresh" : ["Dyn Threshold", "s", "dynThreshold"],
 	"dyn.outgain" : ["Dyn OutGain", "s", "dynOutGain"],
-	"gate.on" : ["Gate on", "b", "gateOn"] };	
+	"gate.on" : ["Gate on", "b", "gateOn"], 
+	"gate.thresh" : ["Gate Threshold", "s", "gateThreshold"],
+	"dyn.range" : ["Gate Range", "s", "gateRange"],
+	"dyn.mode" : ["Gate Mode", "s", "gateMode"]};	
 	
 var dynRatio = {"1" : [ "0" , "1.1 : 1"], "2" : [ "1" , "1.3 : 1"], "3" : [ "2" , "1.5 : 1"], "4" : [ "3" , "2.0 : 1"], "5" : [ "4" , "2.5 : 1"],
 	"6" : [ "5" , "3.0 : 1"], "7" : [ "6" , "4.0 : 1"], "8" : [ "7" , "5.0 : 1"], "9" : [ "8" , "7.0 : 1"], "10" : [ "9" , "10 : 1"],
 	"11" : [ "10" , "20 : 1"], "12" : [ "11" , "100 : 1"]};	
-	
+
+var gateMode = ["Exp2", "Exp3", "Exp4", "Gate", "Duck"]	;
+						
 var freqQ = {"1" : [ "0.0" , "10.0"], "2" : [ "0.014" , "9.5 "], "3" : [ "0.028" , "9.1 "], "4" : [ "0.042" , "8.6 "], "5" : [ "0.056" , "8.2 "],
 			 "6" : [ "0.070" , "7.8 "], "7" : [ "0.085" , "7.4 "], "8" : [ "0.099" , "7.1 "], "9" : [ "0.113" , "6.7 "], "10" : [ "0.127" , "6.4 "],
 			"11" : [ "0.140" , "6.1 "], "12" : [ "0.155" , "5.8 "], "13" : [ "0.169" , "5.5 "], "14" : [ "0.183" , "5.3 "], "15" : [ "0.197" , "5.0 "],
@@ -115,7 +120,7 @@ var freqF = {"1" : [ "0.0000" , "20"], "2" : [ "0.0083" , "21"], "3" : [ "0.0167
 		 "115" : [ "0.9500" , "14150"], "116" : [ "0.9583" , "15200"], "117" : [ "0.9667" , "16300"], "118" : [ "0.9750" , "17400"], "119" : [ "0.9833" , "18000"], "120" : [ "0.9917" , "20000"], 
 		 "121" : [ "1.0000" , "20000"] };
 
-var loCutF = {"1" : [ "0.00" , "20"], "2" : [ "0.04" , "23"], "3" : [ "0.07" , "25"], "4" : [ "0.09" , "26"], "5" : [ "0.10" , "27"], "6" : [ "0.11" , "28"], "7" : [ "0.12" , "29"],
+var loCutF = {"1" : [ "0.0" , "20"], "2" : [ "0.04" , "23"], "3" : [ "0.07" , "25"], "4" : [ "0.09" , "26"], "5" : [ "0.10" , "27"], "6" : [ "0.11" , "28"], "7" : [ "0.12" , "29"],
 		 "8" : [ "0.13" , "30"], "9" : [ "0.18" , "34"], "10" : [ "0.20" , "36"], "11" : [ "0.21" , "38"], "12" : [ "0.23" , "40"], "13" : [ "0.25" , "42"], "14" : [ "0.26" , "44"], 
 		 "15" : [ "0.27" , "45"], "16" : [ "0.28" , "46"], "17" : [ "0.29" , "48"], "18" : [ "0.30" , "49"], "19" : [ "0.31" , "51"], "20" : [ "0.32" , "52"], "21" : [ "0.33" , "54"], 
 		 "22" : [ "0.34" , "55"], "23" : [ "0.35" , "57"], "24" : [ "0.36" , "59"], "25" : [ "0.37" , "61"], "26" : [ "0.38" , "62"], "27" : [ "0.39" , "64"], "28" : [ "0.40" , "66"], 
@@ -146,7 +151,7 @@ var alerts = [
 function init() {
 
 //global vars
-
+//	local.register(snapname, "snapnom");
 
 // Insert Parameters ...
 	SelChanParams = local.parameters.addBoolParameter("Show SelChan Values", "", true);
@@ -304,6 +309,9 @@ function moduleValueChanged(value) {
 			local.send("/"+link+"/dyn/on");
 			local.send("/"+link+"/dyn/ratio");
 			local.send("/"+link+"/dyn/thr");
+			local.send("/"+link+"/gate/thr");
+			local.send("/"+link+"/gate/range");
+			local.send("/"+link+"/gate/mode");
 			local.send("/"+link+"/dyn/mgain");
 			local.send("/"+link+"/gate/on");
 			local.send("/"+link+"/preamp/hpon");
@@ -484,7 +492,9 @@ function keepAlive() {
 }
 
 //=================== OSC EVENTS ============================
-
+/*  function snapnom(address, args)
+{ 		local.values.infos.info12.set(args[0]);
+		snap = args[0]; } */ 
 
 function oscEvent(address, args) { 
 
@@ -633,8 +643,7 @@ function oscEvent(address, args) {
 		local.values.channels.getChild('Channel'+i).getChild('Gate').set(args[0]);} }
 		
 //Selected Channel
-		if (SelChanParams.get()) {
-		
+		if (SelChanParams.get()) {		
 		var targ=local.values.selectedChannel.selectTarget.get();
 		var no=local.values.selectedChannel.selectNo.get();
 		if(targ=="ch" && no < 10){no = "0"+no ;} else {no=no ;}
@@ -667,22 +676,35 @@ function oscEvent(address, args) {
 		local.values.selectedChannel.eqOn.set(args[0]);}
 		if (address == "/"+link+"/dyn/on") {
 		local.values.selectedChannel.dynOn.set(args[0]);}
-		
+// Dyn		
 		if (address == "/"+link+"/dyn/ratio") {
 		var r = args[0];
 		var champs = util.getObjectProperties(dynRatio);
 		for (var n = 0; n < champs.length; n++) {
 		if (r == dynRatio[champs[n]][0]) {t= dynRatio[champs[n]][1] ;} }
-		local.values.selectedChannel.dynRatio.set(t);}
-		
+		local.values.selectedChannel.dynRatio.set(t);}		
 		if (address == "/"+link+"/dyn/thr") {
 		var thr = Math.round((args[0]-1)*600)/10;
 		local.values.selectedChannel.dynThreshold.set(thr+" db");}
 		if (address == "/"+link+"/dyn/mgain") {
 		var g =Math.round(args[0]*240)/10 ;
 		local.values.selectedChannel.dynOutGain.set(g+" db");}
+// Gate
 		if (address == "/"+link+"/gate/on") {
 		local.values.selectedChannel.gateOn.set(args[0]);}
+		if (address == "/"+link+"/gate/thr") {
+		var thr = Math.round((args[0]-1) *800)/10;
+		local.values.selectedChannel.gateThreshold.set(thr+" db");}
+		
+		if (address == "/"+link+"/gate/range") {
+		var range = Math.round(args[0] *570)/10+3;
+		local.values.selectedChannel.gateRange.set(range+" db");}
+		
+		if (address == "/"+link+"/gate/mode") {
+		var mode = args[0] ;
+		for (var n = 0; n < 6; n++) {
+		if (args[0] == n) {
+		local.values.selectedChannel.gateMode.set(gateMode[n]);} }  }
 //LoCut
 		if (address == "/"+link+"/preamp/hpon") {
 		local.values.selectedChannel.loCutOn.set(args[0]);}
@@ -693,9 +715,10 @@ function oscEvent(address, args) {
 		var f= args[0];
 		var champs = util.getObjectProperties(loCutF);
 		for (var n = 0; n < champs.length; n++) {
+		if (f == 0.0) { hp= 20 ;}
 		if (f >= loCutF[champs[n]][0] && f < loCutF[champs[n+1]][0]) { hp= loCutF[champs[n]][1] ;} 
 		if (f == 1.0) { hp= 400 ;}}
-		local.values.selectedChannel.loCutFreq.set(hp+"  Hz");}		
+		local.values.selectedChannel.loCutFreq.set(hp+" Hz");}		
 		
 //Selected Channel EQ	
 		if (targ=="lr" || targ=="bus") {var c = 6 ;} else {c=4;}	
@@ -729,6 +752,9 @@ function oscEvent(address, args) {
 		if (targ=="lr" || targ=="bus") {
 		local.values.selectedChannel.loCutOn.set(0);
 		local.values.selectedChannel.gateOn.set(0);
+		local.values.selectedChannel.gateThreshold.set("");
+		local.values.selectedChannel.gateRange.set("");
+		local.values.selectedChannel.gateMode.set("");
 		local.values.selectedChannel.invert.set(0);
 		local.values.selectedChannel.loCutFreq.set("");}
 		
@@ -743,6 +769,9 @@ function oscEvent(address, args) {
 		local.values.selectedChannel.loCutOn.set(0);
 		local.values.selectedChannel.dynOn.set(0);
 		local.values.selectedChannel.gateOn.set(0);
+		local.values.selectedChannel.gateThreshold.set("");
+		local.values.selectedChannel.gateRange.set("");
+		local.values.selectedChannel.gateMode.set("");
 		local.values.selectedChannel.invert.set(0);
 		local.values.selectedChannel.dynThreshold.set("");
 		local.values.selectedChannel.dynRatio.set("");
@@ -751,7 +780,13 @@ function oscEvent(address, args) {
 		if (targ=="fxsend") {	
 		local.values.selectedChannel.loCutOn.set(0);
 		local.values.selectedChannel.dynOn.set(0);
+		local.values.selectedChannel.dynThreshold.set("");
+		local.values.selectedChannel.dynRatio.set("");
+		local.values.selectedChannel.dynOutGain.set("");
 		local.values.selectedChannel.gateOn.set(0);
+		local.values.selectedChannel.gateThreshold.set("");
+		local.values.selectedChannel.gateRange.set("");
+		local.values.selectedChannel.gateMode.set("");
 		local.values.selectedChannel.invert.set(0);
 		local.values.selectedChannel.eqOn.set(0);
 		local.values.selectedChannel.pan.set("");
@@ -776,22 +811,18 @@ function request_names() {
 		local.send("/rtn/aux/config/name");  		 
 }
 
-function request_chfader() {
- 		for(var i=1; i <10; i++) {
+function request_faders() {
+ 		for(var i=1; i <16; i++) {
+ 		if (i<10) {i="0"+i ;}
 		local.send("/ch/0"+i+"/mix/fader");} 
-		for(var i=10; i <=16; i++) {
-		local.send("/ch/"+i+"/mix/fader");}
 		for(var i=1; i <=4; i++) {
 		local.send("/rtn/"+i+"/mix/fader");} 
-		local.send("/rtn/aux/mix/fader"); 		
-}
-
-function request_busfader() {
- 		for(var i=1; i <6; i++) {
+		local.send("/rtn/aux/mix/fader");
+		for(var i=1; i <6; i++) {
 		local.send("/bus/"+i+"/mix/fader");} 
 		local.send("/lr/mix/fader");
 		for(var i=1; i <=4; i++) {
-		local.send("/dca/"+i+"/fader");}
+		local.send("/dca/"+i+"/fader");} 		
 }
 
 function request_all() {
@@ -1426,6 +1457,40 @@ function player_mode (val) {
 	local.send("/-prefs/usbifcmode", val);
 }
 
+//Headphones
+
+function solo_level (val) {
+	local.send("/config/solo/level", val);
+}
+
+function solo_mute (val) {
+	local.send("/config/solo/mute", val);
+}
+
+function solo_dim (val) {
+	local.send("/config/solo/dim", val);
+}
+
+function solo_dimgain (val) {
+	local.send("/config/solo/dimatt", val);
+}
+
+function solo_dimtrim (val) {
+	local.send("/config/solo/sourcetrim", val);
+}
+
+function solo_dimpfl (val) {
+	local.send("/config/solo/dimpfl", val);
+}
+
+function solo_busmode (val) {
+	local.send("/config/solo/busmode", val);
+}
+
+function solo_chmode (val) {
+	local.send("/config/solo/chmode", val);
+}
+
 //Divers
 
 function Snap_load (val) {
@@ -1437,15 +1502,12 @@ function Snap_save (val) {
 }
 
 function mute_group (group, val) {
-	local.send("/config/mute/"+group+"", val);
+	local.send("/config/mute/"+group, val);
 }
 
-function solo_level (target, val) { 
-	
-	local.send("/config/"+target+"/level", val);
+function clear_solo () {
+	local.send("/-action/clearsolo", 1);
 }
-
-function xinfo () { 
-	
+function xinfo () { 	
 	local.send("/xinfo");
 }

@@ -2527,19 +2527,12 @@
 					"useForMapping": true }
 	
 			} },
-			
-			
+						
 			"LR Comp Reset" : {
 			"menu" : "Main LR",
 			"callback" : "lr_comp_reset"},
-			
-			
-		
 		
 "-------" : { "menu" : "Main LR" },
-		
-
-					
 		
 		"LR EQ on" : {
 			"menu" : "Main LR",
@@ -2558,8 +2551,7 @@
 					"max":1,
 					"useForMapping": true } 
 			} },
-	
-		
+			
 		"LR EQ Gain" : {
 			"menu" : "Main LR",
 			"callback" : "lr_eq_g",
@@ -2583,8 +2575,7 @@
 					"min":0,
 					"max":1,
 					"useForMapping": true	} 
-			}
-		},
+			}  },
 
 		"LR EQ Frequ" : {
 			"menu" : "Main LR",
@@ -2636,9 +2627,7 @@
 						"16K" : 0.967,
 						"20K" : 0.999   } 	} 
 			} },
-
 	
-
 		"LR EQ Q" : {
 			"menu" : "Main LR",
 			"callback" : "lr_eq_q",
@@ -2680,8 +2669,7 @@
 						"9.0" : 0.96,
 						"10.0" : 0.999   } 	}  
 			} 	},
-		
-		
+				
 		"LR EQ Type" : {
 			"menu" : "Main LR",
 			"callback" : "lr_eq_type",
@@ -2708,9 +2696,7 @@
 						"HShv" : 4,
 						"HCut" : 5 } } 
 			} },
-			
-			
-			
+						
 		"LR Comp filter on" : {
 			"menu" : "Main LR",
 			"callback" : "lr_dyn_filter_on",
@@ -2729,7 +2715,6 @@
 					"useForMapping": true } 
 			} 	},
 			
-
 		"LR Comp filter type" : {
 			"menu" : "Main LR",
 			"callback" : "lr_dyn_filter_type",
@@ -2764,8 +2749,7 @@
 					"type":"Enum",
 					"options": {
 						"Channel" : "lr"  } },
-			
-				
+							
 				"Frequency (Select)": {
 					"type": "Enum",
 					"options" : {
@@ -2799,8 +2783,7 @@
 						"16K" : 0.967,
 						"20K" : 0.999   } 	}  
 			} 	},
-			
-			
+						
 			
 		"LR Comp key source" : {
 			"menu" : "Main LR",
@@ -2839,7 +2822,6 @@
 						"Bus 5" : 21,
 						"Bus 6" : 22  } } 
 			} },
-
 		
 		"Snapshot load" : {
 			"menu" : "Actions",
@@ -2886,27 +2868,11 @@
 					"max":1,
 					"useForMapping": true } 
 			} },
-		
-	
-		"Phones Level" : {
-			"menu" : "Actions",
-			"callback" : "solo_level",
-			"parameters" : {
-
-				"Target" : {
-					"type":"Enum",
-					"options": {
-						"Phones Level" : "solo" } },
-				
-				"Level": {
-					"type": "Float",
-					"default": 0.75, 
-					"min":0,
-					"max":1,
-					"useForMapping": true	} 
-			} },
 			
-		
+		"Clear Solos" : {
+			"menu" : "Actions",
+			"callback" : "clear_solo"
+			},				
 		
 "------" : {"menu" : "Actions" },
 
@@ -2949,25 +2915,115 @@
 						"USB Record 18x18" : 0 } }				
 			} },
 			
+		"Phones Level" : {
+			"menu" : "Phones",
+			"callback" : "solo_level",
+			"parameters" : {
+
+				"Level": {
+					"type": "Float",
+					"default": 0.75, 
+					"min":0,
+					"max":1,
+					"useForMapping": true	} 
+			} },
+			
+		"Phones Mute" : {
+			"menu" : "Phones",
+			"callback" : "solo_mute",
+			"parameters" : {
+
+				"Mute on/off": {
+					"type": "Boolean",
+					"default": 0, 
+					"min":0,
+					"max":1,
+					"useForMapping": true } 
+			} },
+			
+		"Phones Dim on/off" : {
+			"menu" : "Phones",
+			"callback" : "solo_dim",
+			"parameters" : {
+
+				"Dim on/off": {
+					"type": "Boolean",
+					"default": 1, 
+					"min":0,
+					"max":1,
+					"useForMapping": true } 
+			} },
+			
+		"Phones Dim Gain" : {
+			"menu" : "Phones",
+			"callback" : "solo_dimgain",
+			"parameters" : {
+
+				"Dim Gain (-40db to 0)": {
+					"type": "Float",
+					"default": 1.0, 
+					"min":0,
+					"max":1,
+					"useForMapping": true	} 
+			} },
+			
+		"Phones Dim Trim" : {
+			"menu" : "Phones",
+			"callback" : "solo_dimtrim",
+			"parameters" : {
+
+				"Trim (-18db to +18db)": {
+					"type": "Float",
+					"default": 0.5, 
+					"min":0,
+					"max":1,
+					"useForMapping": true	} 
+			} },
+					
+		"Phones Dim PFL" : {
+			"menu" : "Phones",
+			"callback" : "solo_dimpfl",
+			"parameters" : {
+
+				"Dim PFL on/off": {
+					"type": "Boolean",
+					"default": 0, 
+					"min":0,
+					"max":1,
+					"useForMapping": true } 
+			} },
+			
+		"Phones Bus PFL/AFL" : {
+			"menu" : "Phones",
+			"callback" : "solo_busmode",
+			"parameters" : {
+
+				"Bus PFL/AFL" : {
+					"type":"Enum",
+					"options": {
+						"PFL" : 0 ,
+						"AFL" : 1 } } 
+			} },
+			
+		"Phones Chan PFL/AFL" : {
+			"menu" : "Phones",
+			"callback" : "solo_chmode",
+			"parameters" : {
+
+				"Channel PFL/AFL" : {
+					"type":"Enum",
+					"options": {
+						"PFL" : 0,
+						"AFL" : 1 } } 
+			} },
+					
 		"Sync Names" : {
 			"menu" : "Requests",
 			"callback" : "request_names"},
 			
-		"Sync Channel Faders" : {
+		"Sync Fader Values" : {
 			"menu" : "Requests",
-			"callback" : "request_chfader"},
-			
-		"Sync Bus Faders" : {
-			"menu" : "Requests",
-			"callback" : "request_busfader"},
-			
-		"Sync Aux&FxRtn Faders" : {
-			"menu" : "Requests",
-			"callback" : "request_rtnfader"},
-			
-		"Sync DCA&MTX Faders" : {
-			"menu" : "Requests",
-			"callback" : "request_dcafader"},
+			"callback" : "request_fader"},
 			
 		"Sync All" : {
 			"menu" : "Requests",
@@ -2977,10 +3033,6 @@
 			"menu" : "Requests",
 			"callback" : "xinfo"
 			}
-
-
-		
-
 
 	}
 }
