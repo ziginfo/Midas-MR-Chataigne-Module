@@ -72,7 +72,7 @@
 			"callback" : "mix_fader",
 			"parameters" : {
 
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -82,7 +82,7 @@
 						"FxSend" : "fxsend",
 						"DCA" : "dca" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -105,7 +105,7 @@
 			"callback" : "mix_on",
 			"parameters" : {
 
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -115,11 +115,11 @@
 						"FxSend" : "fxsend",
 						"DCA" : "dca" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 					
 
@@ -137,14 +137,14 @@
 			"callback" : "mix_st",
 			"parameters" : {
 
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Aux in" : "rtn/aux",
 						"FX return" : "rtn" } 	},
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -164,7 +164,7 @@
 			"callback" : "mix_pan",
 			"parameters" : {
 
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -172,7 +172,7 @@
 						"FX return" : "rtn",
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -192,11 +192,11 @@
 				"callback" : "ch_solo",
 				"parameters" : {
 
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 					
 
@@ -215,14 +215,14 @@
 			"callback" : "mix_send_level",
 			"parameters" : {
 
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Aux in" : "rtn/aux",
 						"FX return" : "rtn" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -249,17 +249,17 @@
 			"callback" : "insert_on",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus"} },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	},
 					
 				"Insert on/off": {
@@ -276,13 +276,13 @@
 			"callback" : "insert_sel",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -335,13 +335,13 @@
 			"callback" : "auxin_trim",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Aux in" : "auxin"
 					} },
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -362,14 +362,14 @@
 			"callback" : "preamp_invert",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Aux in" : "auxin",
 						"FxSend" : "fxsend" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -389,7 +389,7 @@
 			"callback" : "ch_automix_group",
 			"parameters" : {
 			
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -410,7 +410,7 @@
 			"parameters" : {
 			
 				
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -425,12 +425,12 @@
 					"useForMapping": true } 
 			} },
 			
-			"Ch Name" : {
+		"Ch Name" : {
 			"menu" : "Chan Actions",
 			"callback" : "config_name",
 			"parameters" : {
 
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -440,7 +440,7 @@
 						"FxSend" : "fxsend",
 						"DCA" : "dca" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -456,7 +456,7 @@
 			"callback" : "config_color",
 			"parameters" : {
 
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -466,7 +466,7 @@
 						"FxSend" : "fxsend",
 						"DCA" : "dca" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -500,7 +500,7 @@
 			"callback" : "channel_source",
 			"parameters" : {
 			
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -536,7 +536,7 @@
 			"callback" : "full_ch_eq",
 			"parameters" : {
 				
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -545,17 +545,16 @@
 						"Bus" : "bus",
 						"FxSend" : "fxsend" }  },
 						
-				"Channel N°": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true }, 
 					
-				"-----------" : {
-					"type":"Enum",
-					"options": {
-						"Set the EQ Parameters" : "" }  },
+				"--------->" : {
+					"type":"String",
+					"default": "Set the EQ Parameters"  },
 						
 				"EQ On/Off": {
 					"type": "Boolean",
@@ -654,16 +653,16 @@
 			"callback" : "hipass",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 				
 				"Value": {
@@ -711,7 +710,7 @@
 			"callback" : "ch_eq_reset",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -720,7 +719,7 @@
 						"Bus" : "bus",
 						"FxSend" : "fxsend" }  },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -737,7 +736,7 @@
 			"callback" : "eq_on",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -746,11 +745,11 @@
 						"Bus" : "bus",
 						"FxSend" : "fxsend" }  },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true }, 
 					
 				"EQ on/off": {
@@ -767,7 +766,7 @@
 			"callback" : "eq_g",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -776,7 +775,7 @@
 						"Bus" : "bus",
 						"FxSend" : "fxsend" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -803,7 +802,7 @@
 			"callback" : "eq_f",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -812,7 +811,7 @@
 						"Bus" : "bus",
 						"FxSend" : "fxsend" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -865,7 +864,7 @@
 			"callback" : "eq_q",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -874,11 +873,11 @@
 						"Bus" : "bus",
 						"FxSend" : "fxsend" } }
 						,
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 					
 				"Band": {
@@ -920,7 +919,7 @@
 			"callback" : "eq_type",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
@@ -929,11 +928,11 @@
 						"Bus" : "bus",
 						"FxSend" : "fxsend" } },
 				
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 					
 				"Band": {
@@ -959,16 +958,16 @@
 			"callback" : "preamp_hpon",
 			"parameters" : {
 
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } },
 					
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 					
 				"Value": {
@@ -985,12 +984,12 @@
 			"callback" : "preamp_hpf",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1036,12 +1035,12 @@
 			"callback" : "gate_on",
 			"parameters" : {
 
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } },
 					
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1061,12 +1060,12 @@
 			"callback" : "gate_mode",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" 	} },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1088,12 +1087,12 @@
 			"callback" : "gate_thr",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1113,16 +1112,16 @@
 			"callback" : "gate_range",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } },
 				
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 					
 				"Range": {
@@ -1138,16 +1137,16 @@
 			"callback" : "gate_attack",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 					
 				"Attack Time (Select)": {
@@ -1180,12 +1179,12 @@
 			"callback" : "gate_hold",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } 	},
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1222,12 +1221,12 @@
 			"callback" : "gate_release",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } 	},
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1265,12 +1264,12 @@
 			"callback" : "gate_filter_on",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } },
 				
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1290,13 +1289,13 @@
 			"callback" : "gate_filter_type",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch"
 					}
 				},
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1322,12 +1321,12 @@
 			"callback" : "gate_filter_f",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } 	},
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1373,16 +1372,16 @@
 			"callback" : "gate_keysrc",
 			"parameters" : {
 
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true
 				}, 
 				"Value": {
@@ -1420,13 +1419,13 @@
 			"callback" : "ch_comp_full",
 			"parameters" : {
 			
-			"Target type" : {
+			"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus" }  },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1592,13 +1591,13 @@
 			"callback" : "comp_reset",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus" }  },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1614,17 +1613,17 @@
 			"callback" : "dyn_on",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" ,
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 					
 				"Comp on/off": {
@@ -1645,13 +1644,13 @@
 			"callback" : "dyn_mode",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus"  } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1670,13 +1669,13 @@
 			"callback" : "dyn_det",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1695,13 +1694,13 @@
 			"callback" : "dyn_env",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1720,13 +1719,13 @@
 			"callback" : "dyn_thr",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus"  } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1746,13 +1745,13 @@
 			"callback" : "dyn_ratio",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" ,
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1781,17 +1780,17 @@
 			"callback" : "dyn_knee",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 					
 				"Knee": {
@@ -1810,13 +1809,13 @@
 			"callback" : "dyn_mgain",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1836,17 +1835,17 @@
 			"callback" : "dyn_attack",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 					
 				"Attack Time (Select)": {
@@ -1879,13 +1878,13 @@
 			"callback" : "dyn_hold",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1922,17 +1921,17 @@
 			"callback" : "dyn_release",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" ,
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":3162,
+					"max":16,
 					"useForMapping": true	}, 
 					
 				"Release Time (Select)": {
@@ -1965,13 +1964,13 @@
 			"callback" : "dyn_pos",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus"  } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
@@ -1991,17 +1990,17 @@
 			"callback" : "dyn_mix",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus"  } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	},
 					 
 				"Mix %": {
@@ -2017,17 +2016,17 @@
 			"callback" : "dyn_auto",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" ,
 						"Bus" : "bus" } },
 				
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	},
 					 
 				"Autotime on/off": {
@@ -2049,17 +2048,17 @@
 			"callback" : "dyn_filter_on",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus"  } 	},
 					
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 					
 				"Filter on/off": {
@@ -2075,17 +2074,17 @@
 			"callback" : "dyn_filter_type",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch" ,
 						"Bus" : "bus" } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	},
 					 
 				"Filter Type": {
@@ -2107,17 +2106,17 @@
 			"callback" : "dyn_filter_f",
 			"parameters" : {
 			
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus"  } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true	}, 
 				
 				"Frequency (Select)": {
@@ -2161,17 +2160,17 @@
 			"callback" : "comp_keysrc",
 			"parameters" : {
 
-				"Target type" : {
+				"Channel Type" : {
 					"type":"Enum",
 					"options": {
 						"Channel" : "ch",
 						"Bus" : "bus"  } },
 						
-				"Channel": {
+				"Channel No": {
 					"type": "Integer",
 					"default": 1, 
 					"min":1,
-					"max":32,
+					"max":16,
 					"useForMapping": true }, 
 					
 				"Value": {

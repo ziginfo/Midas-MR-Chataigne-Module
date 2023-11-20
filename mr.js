@@ -8,13 +8,19 @@ var ShowNames;
 var AllowSend ;
 var push ;
 var targ;
-var no ;
-var link ;
-var trig ;
+var no;
+var link;
+var trig;
+var snap;
+var snapname = "/-snap/name";
+var snapindex = "/-snap/index" ;
 var chanName = [
 	"Channel 1", "Channel 2", "Channel 3", "Channel 4", "Channel 5", "Channel 6", "Channel 7", "Channel 8", 
 	"Channel 9", "Channel 10", "Channel 11", "Channel 12", "Channel 13", "Channel 14", "Channel 15", "Channel 16", 
 	"Bus 1", "Bus 2", "Bus 3", "Bus 4", "Bus 5", "Bus 6", "Main LR"];
+var infoName = [
+	"Device IP", "Device Name", "Device Model", "Device Version", "Device Status", "Snapshot Name", "Info 7", "Info 8", 
+	"Info 9", "Info 10", "Info 11", "Info 12", "Info 13", "Info 14", "Info 15", "Info 16"];
 var trackName = [
 	"Track 1", "Track 2", "Track 3", "Track 4", "Track 5", "Track 6", "Track 7", "Track 8", 
 	"Track 9", "Track 10", "Track 11", "Track 12", "Track 13", "Track 14", "Track 15", "Track 16", 
@@ -124,7 +130,7 @@ var loCutF = {"1" : [ "0.00" , "20"], "2" : [ "0.04" , "23"], "3" : [ "0.07" , "
 		 "85" : [ "0.97" , "366"], "86" : [ "0.98" , "377"], "87" : [ "0.99" , "388"], "88" : [ "1.00" , "400"] } ;
 
 var eqFilter = {"1" : [ "0" , "LoCut"], "2" : [ "1" , "Lo-Shelf"], "3" : [ "2" , "PEQ"], "4" : [ "3" , "VEQ"],
-		"5" : [ "4" , "Hi-Shelf"], "6" : [ "5" , "HiCut"] };	
+				"5" : [ "4" , "Hi-Shelf"], "6" : [ "5" , "HiCut"] };	
 		
 // These messages can be displayed in the Info-Tab !!
 var message = [
@@ -138,6 +144,9 @@ var alerts = [
 
 //  initial functions
 function init() {
+
+//global vars
+
 
 // Insert Parameters ...
 	SelChanParams = local.parameters.addBoolParameter("Show SelChan Values", "", true);
@@ -156,9 +165,9 @@ function init() {
 // insert containers...	
 	if (ShowInfos.get()) {
 	infos=local.values.addContainer("Infos");
-		infos.setCollapsed(true);	
-		for (var i = 1; i<=16; i++) {
-		infos.addStringParameter("Info "+(i), "","");} }
+		infos.setCollapsed(true); 	
+		for (var n = 0; n < infoName.length; n++) {
+			infos.addStringParameter(infoName[n], "", ""); }  }
 		
 //Names Container		
 	names=local.values.addContainer("Names");
@@ -314,6 +323,8 @@ function moduleValueChanged(value) {
 
  		local.send("/xinfo");
  		local.send("/status");
+ 		local.send("/-snap/name");
+ 		local.send("/-snap/index");
 // set Advices and Alerts
  		var alert = alerts[0];
  		local.values.requestSync.set(alert) ;
@@ -472,20 +483,32 @@ function keepAlive() {
 		
 }
 
-//=================== OSC EVENTS =============================
+//=================== OSC EVENTS ============================
+
 
 function oscEvent(address, args) { 
-// infos
+
+// infos insert
 	if (ShowInfos.get()) {
+	
 		if (address== "/xinfo"){ 
-		local.values.infos.info1.set(address);
 		for(var i=0; i <=3; i++) {
-		var n=i+2 ; 
-		local.values.infos.getChild('Info'+n).set(args[i]);}  }
+		var n=i ; 
+		var line = infoName[n].split(" ").join("") ;
+		local.values.infos.getChild(line).set(args[i]);}  }
+		
 		if (address== "/status"){ 
-		for(var i=0; i < 3; i++) {
-		var n=i+6 ; 
-		local.values.infos.getChild('Info'+n).set(args[i]);}  } }
+		var n=4 ;
+		var child = infoName[n].split(" ").join("") ; 
+		local.values.infos.getChild(child).set(args[0]);}
+		  
+		if (address== snapindex){
+		snap = args[0];}
+		if (address== snapname){
+		var spname = snap+"-"+args[0]; ;
+		var child = infoName[5].split(" ").join("") ;
+		local.values.infos.getChild(child).set(spname);}
+		  }
 			
 // names
 	if (ShowNames.get()) {				
@@ -820,483 +843,483 @@ function request_all() {
 // ========================== REGULAR FUCNTIONS =============================
 //  Chan Config ------>>>>>
 
-function config_name(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/config/name", val); 
+function config_name(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/config/name", val); 
 }
 
-function config_color(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/config/color", val);
+function config_color(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/config/color", val);
 }
 
-function channel_source(targetNumber, val) {
+function channel_source(chanNo, val) {
 	
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } 
-	local.send("/ch/"+targetNumber+"/config/insrc", val);
+	if (chanNo < 10) {chanNo = "0"+chanNo; } 
+	local.send("/ch/"+chanNo+"/config/insrc", val);
 }
 
 //  Channel Action ------>>>>>s
 
-function ch_automix_group(targetNumber, val) {
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } 
-	local.send("/ch/"+targetNumber+"/automix/group", val);
+function ch_automix_group(chanNo, val) {
+	if (chanNo < 10) {chanNo = "0"+chanNo; } 
+	local.send("/ch/"+chanNo+"/automix/group", val);
 }
 
-function ch_automix_gain(targetNumber, val) {
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } 
+function ch_automix_gain(chanNo, val) {
+	if (chanNo < 10) {chanNo = "0"+chanNo; } 
 	
-	local.send("/ch/"+targetNumber+"/automix/weight", val);
+	local.send("/ch/"+chanNo+"/automix/weight", val);
 }
 
 
 
 //  Preamp ------>>>>>
 
-function preamp_gain(targetType, targetNumber, val) {
+function preamp_gain(chanType, chanNo, val) {
 	
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/headamp/"+targetNumber+"/gain", val);
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/headamp/"+chanNo+"/gain", val);
 }
 
-function auxin_trim(targetType, targetNumber, val) {
+function auxin_trim(chanType, chanNo, val) {
 	
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
 	local.send("/rtn/aux/preamp /rtntrim", val);
 }
 
-function preamp_invert(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/preamp/invert", val);
+function preamp_invert(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/preamp/invert", val);
 }
 
 //  Channel ------>>>>>
 
-function mix_fader(targetType, targetNumber, val) {
+function mix_fader(chanType, chanNo, val) {
 	
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }	
-	if (targetType == "dca"){local.send("/"+targetType+"/"+targetNumber+"/fader", val);} else
-	{if (targetType == "rtn/aux")
-	{local.send("/"+targetType+"/mix/fader", val);} else
-	{local.send("/"+targetType+"/"+targetNumber+"/mix/fader", val);}}
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }	
+	if (chanType == "dca"){local.send("/"+chanType+"/"+chanNo+"/fader", val);} else
+	{if (chanType == "rtn/aux")
+	{local.send("/"+chanType+"/mix/fader", val);} else
+	{local.send("/"+chanType+"/"+chanNo+"/mix/fader", val);}}
 }
 
 
-function mix_on(targetType, targetNumber, val) {
+function mix_on(chanType, chanNo, val) {
 	val=1-val ;
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }	
-	if (targetType == "dca"){local.send("/"+targetType+"/"+targetNumber+"/on", val);} else
-	{if (targetType == "rtn/aux")
-	{local.send("/"+targetType+"/mix/on", val); } else
-	{local.send("/"+targetType+"/"+targetNumber+"/mix/on", val);}}
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }	
+	if (chanType == "dca"){local.send("/"+chanType+"/"+chanNo+"/on", val);} else
+	{if (chanType == "rtn/aux")
+	{local.send("/"+chanType+"/mix/on", val); } else
+	{local.send("/"+chanType+"/"+chanNo+"/mix/on", val);}}
 }
 
-function mix_st(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }	
-	{if (targetType == "rtn/aux")
-	{local.send("/"+targetType+"/mix/lr", val);} else
-	{local.send("/"+targetType+"/"+targetNumber+"/mix/lr", val);}}	
+function mix_st(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }	
+	{if (chanType == "rtn/aux")
+	{local.send("/"+chanType+"/mix/lr", val);} else
+	{local.send("/"+chanType+"/"+chanNo+"/mix/lr", val);}}	
 }
 
-function mix_pan(targetType, targetNumber, val) {
+function mix_pan(chanType, chanNo, val) {
 	
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }	
-	{if (targetType == "rtn/aux")
-	{local.send("/"+targetType+"/mix/pan", val);} else
-	{local.send("/"+targetType+"/"+targetNumber+"/mix/pan", val);} }
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }	
+	{if (chanType == "rtn/aux")
+	{local.send("/"+chanType+"/mix/pan", val);} else
+	{local.send("/"+chanType+"/"+chanNo+"/mix/pan", val);} }
 }
 
-function ch_solo(targetNumber, val) {
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } 	
-	local.send("/-stat/solosw/"+targetNumber, val);
+function ch_solo(chanNo, val) {
+	if (chanNo < 10) {chanNo = "0"+chanNo; } 	
+	local.send("/-stat/solosw/"+chanNo, val);
 }
 
-function mix_send_level(targetType, targetNumber, mix, val) {
+function mix_send_level(chanType, chanNo, mix, val) {
 	
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
 	if (mix < 10) {mix = "0"+mix; } 
-	{if (targetType == "rtn/aux")
-	{local.send("/"+targetType+"/mix/"+mix+"/level", val);} else
-	{local.send("/"+targetType+"/"+targetNumber+"/mix/"+mix+"/level", val); } }
+	{if (chanType == "rtn/aux")
+	{local.send("/"+chanType+"/mix/"+mix+"/level", val);} else
+	{local.send("/"+chanType+"/"+chanNo+"/mix/"+mix+"/level", val); } }
 }
 
 //  Gate ------>>>>>
 
-function gate_on(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/gate/on", val);
+function gate_on(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/gate/on", val);
 }
 
-function gate_mode(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/gate/mode", val);
+function gate_mode(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/gate/mode", val);
 }
 
-function gate_thr(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
+function gate_thr(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
 	
-	local.send("/"+targetType+"/"+targetNumber+"/gate/thr", val);
+	local.send("/"+chanType+"/"+chanNo+"/gate/thr", val);
 }
 
-function gate_range(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
+function gate_range(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
 	
-	local.send("/"+targetType+"/"+targetNumber+"/gate/range", val);
+	local.send("/"+chanType+"/"+chanNo+"/gate/range", val);
 }
 
-function gate_attack(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
+function gate_attack(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
 	
-	local.send("/"+targetType+"/"+targetNumber+"/gate/attack", val);
+	local.send("/"+chanType+"/"+chanNo+"/gate/attack", val);
 }
 
-function gate_hold(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/gate/hold", val);
+function gate_hold(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/gate/hold", val);
 }
 
-function gate_release(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/gate/release", val);
+function gate_release(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/gate/release", val);
 }
 
-function gate_keysrc(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/gate/keysrc", val);
+function gate_keysrc(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/gate/keysrc", val);
 }
 
-function gate_filter_on(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/gate/filter/on", val);
+function gate_filter_on(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/gate/filter/on", val);
 }
 
-function gate_filter_type(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/gate/filter/type", val);
+function gate_filter_type(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/gate/filter/type", val);
 }
 
-function gate_filter_f(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/gate/filter/f", val);
+function gate_filter_f(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/gate/filter/f", val);
 }
 
-function gate_keysrc(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/gate/keysrc", val);
+function gate_keysrc(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/gate/keysrc", val);
 }
 
 //  Compressor ------>>>>>
 
-function ch_comp_full(targetType, targetNumber, val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13 ) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/on", val1);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/mode", val2);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/det", val3);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/env", val4);	
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/thr", val5);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/ratio", val6);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/knee", val7);	
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/mgain", val8);	
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/attack", val9);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/hold", val10);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/release", val11);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/mix", val12);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/auto", val13);
+function ch_comp_full(chanType, chanNo, val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13 ) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/on", val1);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/mode", val2);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/det", val3);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/env", val4);	
+	local.send("/"+chanType+"/"+chanNo+"/dyn/thr", val5);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/ratio", val6);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/knee", val7);	
+	local.send("/"+chanType+"/"+chanNo+"/dyn/mgain", val8);	
+	local.send("/"+chanType+"/"+chanNo+"/dyn/attack", val9);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/hold", val10);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/release", val11);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/mix", val12);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/auto", val13);
 }
 
-function comp_reset(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/keysrc", val);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/on", 0);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/mode", 0);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/det", 0);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/env", 1);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/thr", 1.0);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/ratio", 0);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/knee", 1);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/attack", 0.085);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/hold", 0.545);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/release", 0.51);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/mix", 1.0);
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/auto", 0);
+function comp_reset(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/keysrc", val);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/on", 0);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/mode", 0);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/det", 0);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/env", 1);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/thr", 1.0);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/ratio", 0);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/knee", 1);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/attack", 0.085);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/hold", 0.545);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/release", 0.51);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/mix", 1.0);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/auto", 0);
 }
 
 
-function dyn_on(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/on", val);
+function dyn_on(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/on", val);
 }
 
-function dyn_mode(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/mode", val);
+function dyn_mode(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/mode", val);
 }
 
-function dyn_det(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/det", val);
+function dyn_det(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/det", val);
 }
 
-function dyn_env(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/env", val);
+function dyn_env(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/env", val);
 }
 
-function dyn_thr(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
+function dyn_thr(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
 	
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/thr", val);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/thr", val);
 }
 
-function dyn_ratio(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/ratio", val);
+function dyn_ratio(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/ratio", val);
 }
 
-function dyn_knee(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/knee", val);
+function dyn_knee(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/knee", val);
 }
 
-function dyn_mgain(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
+function dyn_mgain(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
 	
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/mgain", val);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/mgain", val);
 }
 
-function dyn_attack(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
+function dyn_attack(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
 	
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/attack", val);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/attack", val);
 }
 
-function dyn_hold(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/hold", val);
+function dyn_hold(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/hold", val);
 }
 
-function dyn_release(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/release", val);
+function dyn_release(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/release", val);
 }
 
-function dyn_pos(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/pos", val);
+function dyn_pos(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/pos", val);
 }
 
-function dyn_keysrc(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/keysrc", val);
+function dyn_keysrc(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/keysrc", val);
 }
 
-function dyn_mix(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
+function dyn_mix(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
 	
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/mix", val);
+	local.send("/"+chanType+"/"+chanNo+"/dyn/mix", val);
 }
 
-function dyn_auto(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/auto", val);
+function dyn_auto(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/auto", val);
 }
 
-function dyn_filter_on(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/filter/on", val);
+function dyn_filter_on(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/filter/on", val);
 }
 
-function dyn_filter_type(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/filter/type", val);
+function dyn_filter_type(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/filter/type", val);
 }
 
-function dyn_filter_f(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/filter/f", val);
+function dyn_filter_f(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/filter/f", val);
 }
 
-function comp_keysrc(targetType, targetNumber, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/dyn/keysrc", val);
+function comp_keysrc(chanType, chanNo, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/dyn/keysrc", val);
 }
 
 //  Insert ------>>>>>
 
-function insert_on(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/insert/on", val);
+function insert_on(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/insert/on", val);
 }
 
-function insert_pos(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/insert/pos", val);
+function insert_pos(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/insert/pos", val);
 }
 
-function insert_sel(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/insert/fxslot", val);
+function insert_sel(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/insert/fxslot", val);
 }
 
 //  EQ ------>>>>>
 
-function full_ch_eq (targetType, targetNumber, val, val1, band, val2, val3, val4, val5) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
+function full_ch_eq (chanType, chanNo, val, val1, band, val2, val3, val4, val5) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
 	
 	val4=1-val4 ;
-	local.send("/"+targetType+"/"+targetNumber+"/eq/on", val1);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/"+band+"/g", val2);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/"+band+"/f", val3);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/"+band+"/q", val4);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/"+band+"/type", val5);
+	local.send("/"+chanType+"/"+chanNo+"/eq/on", val1);
+	local.send("/"+chanType+"/"+chanNo+"/eq/"+band+"/g", val2);
+	local.send("/"+chanType+"/"+chanNo+"/eq/"+band+"/f", val3);
+	local.send("/"+chanType+"/"+chanNo+"/eq/"+band+"/q", val4);
+	local.send("/"+chanType+"/"+chanNo+"/eq/"+band+"/type", val5);
 }
 
-function ch_eq_reset(targetType, targetNumber) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/eq/1/g", 0.5);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/2/g", 0.5);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/3/g", 0.5);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/4/g", 0.5);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/5/g", 0.5);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/6/g", 0.5);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/1/f", 0.2);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/2/f", 0.4);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/3/f", 0.5);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/4/f", 0.8);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/5/f", 0.85);
-	local.send("/"+targetType+"/"+targetNumber+"/eq/6/f", 0.9);
+function ch_eq_reset(chanType, chanNo) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/eq/1/g", 0.5);
+	local.send("/"+chanType+"/"+chanNo+"/eq/2/g", 0.5);
+	local.send("/"+chanType+"/"+chanNo+"/eq/3/g", 0.5);
+	local.send("/"+chanType+"/"+chanNo+"/eq/4/g", 0.5);
+	local.send("/"+chanType+"/"+chanNo+"/eq/5/g", 0.5);
+	local.send("/"+chanType+"/"+chanNo+"/eq/6/g", 0.5);
+	local.send("/"+chanType+"/"+chanNo+"/eq/1/f", 0.2);
+	local.send("/"+chanType+"/"+chanNo+"/eq/2/f", 0.4);
+	local.send("/"+chanType+"/"+chanNo+"/eq/3/f", 0.5);
+	local.send("/"+chanType+"/"+chanNo+"/eq/4/f", 0.8);
+	local.send("/"+chanType+"/"+chanNo+"/eq/5/f", 0.85);
+	local.send("/"+chanType+"/"+chanNo+"/eq/6/f", 0.9);
 }
 
-function eq_on(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/eq/on", val);
+function eq_on(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/eq/on", val);
 }
 
-function eq_type(targetType, targetNumber, band, val) { 
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; }
-	local.send("/"+targetType+"/"+targetNumber+"/eq/"+band+"/type", val);
+function eq_type(chanType, chanNo, band, val) { 
+	if (chanNo < 10) {chanNo = "0"+chanNo; }
+	local.send("/"+chanType+"/"+chanNo+"/eq/"+band+"/type", val);
 }
 
-function eq_f(targetType, targetNumber, band, val) { 
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/eq/"+band+"/f", val);
+function eq_f(chanType, chanNo, band, val) { 
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/eq/"+band+"/f", val);
 }
 
-function eq_g(targetType, targetNumber, band, val) { 
+function eq_g(chanType, chanNo, band, val) { 
 	Val = 1-val ;
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/eq/"+band+"/g", val);
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/eq/"+band+"/g", val);
 }
 
-function eq_q(targetType, targetNumber, band, val) {
+function eq_q(chanType, chanNo, band, val) {
 	val = 1-val ;  
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/eq/"+band+"/q", val);
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/eq/"+band+"/q", val);
 }
 
 // Hi-Pass ------>>>>>
 
-function hipass (targetType, targetNumber, val1, val2) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/preamp/hpon", val1);
-	local.send("/"+targetType+"/"+targetNumber+"/preamp/hpf", val2);
+function hipass (chanType, chanNo, val1, val2) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/preamp/hpon", val1);
+	local.send("/"+chanType+"/"+chanNo+"/preamp/hpf", val2);
 }
 
-function preamp_hpon(targetType, targetNumber, val) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/preamp/hpon", val);
+function preamp_hpon(chanType, chanNo, val) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/preamp/hpon", val);
 }
 
-function preamp_hpf(targetType, targetNumber, val) {
+function preamp_hpf(chanType, chanNo, val) {
 	
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
-	local.send("/"+targetType+"/"+targetNumber+"/preamp/hpf", val);
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
+	local.send("/"+chanType+"/"+chanNo+"/preamp/hpf", val);
 }
 
 //  LR-Channel
-function lr_fader(targetType, val) { 
+function lr_fader(chanType, val) { 
 	
-	local.send("/"+targetType+"/mix/fader", val);
+	local.send("/"+chanType+"/mix/fader", val);
 }
 
-function lr_on(targetType, val) {
+function lr_on(chanType, val) {
 	val=1-val;
-	local.send("/"+targetType+"/mix/on", val);
+	local.send("/"+chanType+"/mix/on", val);
 }
 
-function lr_pan(targetType,val) {
+function lr_pan(chanType,val) {
 
-	local.send("/"+targetType+"/mix/pan", val);
+	local.send("/"+chanType+"/mix/pan", val);
 }
 
-function lr_eq (val1,targetType,  val, band, val2, val3, val4, val5) {
+function lr_eq (val1,chanType,  val, band, val2, val3, val4, val5) {
 	
 	val4=1-val4 ;
-	local.send("/"+targetType+"/eq/on", val1);
-	local.send("/"+targetType+"/eq/"+band+"/g", val2);
-	local.send("/"+targetType+"/eq/"+band+"/f", val3);
-	local.send("/"+targetType+"/eq/"+band+"/q", val4);
-	local.send("/"+targetType+"/eq/"+band+"/type", val5);
+	local.send("/"+chanType+"/eq/on", val1);
+	local.send("/"+chanType+"/eq/"+band+"/g", val2);
+	local.send("/"+chanType+"/eq/"+band+"/f", val3);
+	local.send("/"+chanType+"/eq/"+band+"/q", val4);
+	local.send("/"+chanType+"/eq/"+band+"/type", val5);
 }
 
-function lr_eq_reset(targetType, targetNumber) {
-	if (targetType == "ch"){
-	if (targetNumber < 10) {targetNumber = "0"+targetNumber; } }
+function lr_eq_reset(chanType, chanNo) {
+	if (chanType == "ch"){
+	if (chanNo < 10) {chanNo = "0"+chanNo; } }
 	local.send("/lr/eq/1/g", 0.5);
 	local.send("/lr/eq/2/g", 0.5);
 	local.send("/lr/eq/3/g", 0.5);
@@ -1311,8 +1334,8 @@ function lr_eq_reset(targetType, targetNumber) {
 	local.send("/lr/eq/6/f", 0.9);
 }
 
-function lr_eq_on(targetType, val) {
-	local.send("/"+targetType+"/eq/on", val);
+function lr_eq_on(chanType, val) {
+	local.send("/"+chanType+"/eq/on", val);
 }
 
 function lr_comp(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13 ) {
@@ -1353,40 +1376,40 @@ function lr_comp_reset() {
 	
 }
 
-function lr_eq_f(targetType, band, val) { 
-	local.send("/"+targetType+"/eq/"+band+"/f", val);
+function lr_eq_f(chanType, band, val) { 
+	local.send("/"+chanType+"/eq/"+band+"/f", val);
 }
 
-function lr_eq_g(targetType, band, val) {
+function lr_eq_g(chanType, band, val) {
 	 
-	local.send("/"+targetType+"/eq/"+band+"/g", val);
+	local.send("/"+chanType+"/eq/"+band+"/g", val);
 }
 
-function lr_eq_q(targetType, band, val) {
+function lr_eq_q(chanType, band, val) {
 	val=1-val ;
-	local.send("/"+targetType+"/eq/"+band+"/q", val);
+	local.send("/"+chanType+"/eq/"+band+"/q", val);
 }
 
-function lr_eq_type(targetType, band, val) { 
-	local.send("/"+targetType+"/eq/"+band+"/type", val);
+function lr_eq_type(chanType, band, val) { 
+	local.send("/"+chanType+"/eq/"+band+"/type", val);
 }
 
 
 
-function lr_dyn_filter_on(targetType, val) {	
-	local.send("/"+targetType+"/dyn/filter/on", val);
+function lr_dyn_filter_on(chanType, val) {	
+	local.send("/"+chanType+"/dyn/filter/on", val);
 }
 
-function lr_dyn_filter_type(targetType, val) { 	
-	local.send("/"+targetType+"/dyn/filter/type", val);
+function lr_dyn_filter_type(chanType, val) { 	
+	local.send("/"+chanType+"/dyn/filter/type", val);
 }
 
-function lr_dyn_filter_f(targetType, val) {
-	local.send("/"+targetType+"/dyn/filter/f", val);
+function lr_dyn_filter_f(chanType, val) {
+	local.send("/"+chanType+"/dyn/filter/f", val);
 }
 
-function lr_comp_keysrc(targetType, val) { 
-	local.send("/"+targetType+"/dyn/keysrc", val);
+function lr_comp_keysrc(chanType, val) { 
+	local.send("/"+chanType+"/dyn/keysrc", val);
 }
 
 //Player ------>>>>>
