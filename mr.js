@@ -377,20 +377,20 @@ function moduleValueChanged(value) {
 // Fx-Rtn and DCA 			
 		for(var i=1; i <=4; i++) {
 		local.send("/subscribe","/rtn/"+i+"/"+subscrParam[1]);
-		local.send("/subscribe","/dca/"+i+"/"+subscrParam[1]);}		 
+		local.send("/subscribe","/dca/"+i+"/fader");}		 
 		local.send("/subscribe","/rtn/aux/"+subscrParam[1]);
-		// Main LR		
+// Main LR		
 		local.send("/subscribe","/lr/config/name");
 		local.send("/subscribe","/lr/mix/fader");
 		local.send("/subscribe","/lr/mix/pan");
 		local.send("/subscribe","/lr/mix/on");
 		local.send("/subscribe","/lr/eq/on");
 		local.send("/subscribe","/lr/dyn/on");	
-/*								
+/*							
 		for(var i=0 ; i < 6; i++) {
 		var link = subscrParam[i] ;
 		local.send("/lr/"+link+" 50");}
-*/
+*/	
 }	
 
 // ==================================================================
@@ -589,7 +589,7 @@ function oscEvent(address, args) {
 		local.values.faders.busDCAFaders.mainLR.set(args[0]);}	
 		for(var i=1; i <=4; i++) {
 		if (address == "/dca/"+i+"/fader") {
-		local.values.faders.busDCAFaders.getChild('DCA'+i).set(args[0]);} }	
+		local.values.faders.busDCAFaders.getChild('DCA'+i).set(0.7);} }	
 		
 		}
 				
@@ -604,7 +604,6 @@ function oscEvent(address, args) {
 		else if(f >=0.0625) {var db=(f * 160)-70;}
 		else if (f >= 0.0) {var db=(f * 480)-90;}
 		d= (Math.round(db*10))/10;	
-
 		local.values.channels.getChild('Channel'+i).getChild('Fader').set(db);} }
 		for(var i=1; i <=6; i++) {
 		if (address == "/bus/"+i+"/mix/fader") {
@@ -622,8 +621,7 @@ function oscEvent(address, args) {
 		else if(f >=0.0625) {var db=(f * 160)-70;}
 		else if (f >= 0.0) {var db=(f * 480)-90;}
 		d= (Math.round(db*10))/10;
-		local.values.channels.mainLR.fader.set(db);}		
-				
+		local.values.channels.mainLR.fader.set(db);}						
 //Pan				
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
@@ -646,7 +644,7 @@ function oscEvent(address, args) {
 		if (address == "/bus/"+i+"/mix/on") {
 		var on = 1-(args[0]);
 		local.values.channels.getChild('Bus'+i).getChild('Mute').set(on); } }		
-//EQ		
+//EQ_on		
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/eq/on") {
@@ -685,19 +683,17 @@ function oscEvent(address, args) {
 		if(targ=="ch" && no < 10){no = "0"+no ;} else {no=no ;}
 		if (targ=="lr") {var link = targ ;}
 		else {link = targ+"/"+no ;}
-		
+			
 //Selected Channel Name, Fader etc
 		if (address == "/"+link+"/config/name") {
 		local.values.selectedChannel.label.set(args[0]);}		
 		if (address == "/"+link+"/mix/fader") {
-		var f =args[0];			
-/*		if (f >= 0.5) {var d=(f * 40)-30;}
+		var f =args[0];					
+	if (f >= 0.5) {var d=(f * 40)-30;}
 		else if(f >=0.25 && f <0.5) {var d=(f * 80)-50;}
 		else if(f >=0.0625 && f <0.25) {var d=(f * 160)-70;}
 		else if (f >= 0.0 && f <0.0625) {var d=(f * 480)-90;}
-		d= Math.round(d*10)/10;
-*/		
-		
+		d= Math.round(d*10)/10;				
 		local.values.selectedChannel.fader.set(d+" db");}
 //Pan
 		if (address == "/"+link+"/mix/pan") {
