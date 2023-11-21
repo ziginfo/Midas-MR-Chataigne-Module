@@ -3,12 +3,12 @@
 	"type": "OSC",
 	"path": "Console",
 	
-	"version": "2.0",
+	"version": "2.2",
 	"description": "Allow you to control a Midas MR or Behringer X-Air with chataigne",
 	"url":"https://github.com/ziginfo/Midas-MR-Chataigne-Module",
 	"downloadURL": "https://github.com/ziginfo/Midas-MR-Chataigne-Module/archive/refs/heads/main.zip",
 	
-	"hasInput": false,
+	"hasInput": true,
 	"hasOutput": true, 
 
 	"hideDefaultCommands": true,
