@@ -56,9 +56,7 @@
 			
 		"Selected Channel":{
 			"type":"Container",
-			"collapsed":true,
-			"Select Target":{"type":"Enum","options":{"Input":"ch","Bus":"bus","FX-Return":"rtn","FX-Send":"fxsend","Main LR":"lr"}},  
-			"Select No":{"type":"Integer", "min":1,"max":16}}	
+			"collapsed":true }	
 	},
 	
 	
