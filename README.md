@@ -5,7 +5,7 @@ Most of the commands and actions run for both, MR12 and MR18; but some of them w
 The Player-Functions for example are valid only for MR12   
 And please be aware that the number of available Channels and Busses etc depends on the model (MR-12 or 18; XR 12, 16, or 18) !
 
-### Updated to version 2.1  (nov 2023)
+### Updated to version 2.2  (nov 2023)
 We have Feedback from the MR/X-Air Console for Names and Fader-Levels, EQ, Mute, Dyn and Pan Status etc... 
 There is a new Feedback-Tab called **"Selected Channel"**. You can select a given channel by Target and Number and get its full feedback (name, fader, eq- and dyn-settings etc, etc... I will add more values later-on...) After changing the target or the channel-number just hit "Click To Sync" to request the new values from the console. And you can also reset the whole Selected-Channel-Form by clicking the "Reset-Button".   
 As all these Feedbacks and the resulting busy OSC-Data-Flux may slow-down Chataigne for other functions, There is a possibility to choose which Feedback you need or you wanna use.   
