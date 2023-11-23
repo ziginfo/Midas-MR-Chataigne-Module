@@ -1,17 +1,20 @@
 // ========================== VARS ===========================
+var myParameters = {};
 var SyncAll;
+var SyncInfos;
 var ResetAll;
 var SelChanParams;
 var ShowInfos;
 var ShowNames;
 var AllowSend ;
+var paramLink ;
+var dynRatio ;
 var push ;
 var targ;
 var no;
 var link;
 var trig;
 var snap;
-var floatG;
 var snapname = "/-snap/name";
 var snapindex = "/-snap/index" ;
 
@@ -20,10 +23,16 @@ var mixerNames = [
 	"Channel 9" , "Channel 10" , "Channel 11" , "Channel 12" , "Channel 13" , "Channel 14" , "Channel 15" , "Channel 16" , 
 	"Aux USB" , "FX Return 1" , "FX Return 2" , "FX Return 3" , "FX Return 4" , 
 	"Bus 1" , "Bus 2" , "Bus 3" , "Bus 4" , "Bus 5" , "Bus 6" , 
-	"Main LR" , "DCA 1" , "DCA 2" , "DCA 3" , "DCA 4"];
+	"Main LR" , "DCA 1" , "DCA 2" , "DCA 3" , "DCA 4"];	
+var mixerLinks = [
+	"/ch/01/" , "/ch/02/" , "/ch/03/" , "/ch/04/" , "/ch/05/" , "/ch/06/" , "/ch/07/" , "/ch/08/" , 
+	"/ch/09/" , "/ch/10/" , "/ch/11/" , "/ch/12/" , "/ch/13/" , "/ch/14/" , "/ch/15/" , "/ch/16/" ,
+	"/rtn/aux/" , "/rtn/01/" , "/rtn/02/" , "/rtn/03/" , "/rtn/04/" , 
+	"/bus/1/" , "/bus/2/" , "/bus/3/" , "/bus/4/" , "/bus/5/" , "/bus/6/" , 
+	"/lr/" , "/dca/1/" , "/dca/2/" , "/dca/3/" , "/dca/4/"];	
 var infoName = [
-	"Device IP", "Device Name", "Device Model", "Device Version", "Device Status", "Snapshot Name", "Info 7", "Info 8", 
-	"Info 9", "Info 10", "Info 11", "Info 12", "Info 13", "Info 14", "Info 15", "Info 16"];
+	"Device IP" , "Device Name" , "Device Model" , "Device Version" , "Device Status" , "Snapshot Name", "Advice" , "Info 1" , 
+	"Info 2" , "Info 3" , "Info 4" , "Info 5" , "Info 6" , "Info 7" , "Info 8"];
 var channLabel = {
 	"nam"	: ["Name", "s", "label"],
 	"fad" : ["Fader", "f","fader"],
@@ -75,7 +84,7 @@ var selChann = {
 	"dyn.range" : ["Gate Range", "s", "gateRange", "gate/range"],
 	"dyn.mode" : ["Gate Mode", "s", "gateMode", "gate//mode"]};
 	
-var subscrParam =["config/name", "mix/fader", "mix/pan", "mix/on", "eq/on", "dyn/on", "preamp/hpon", "gate/on"];	
+var paramLink =["config/name", "mix/fader", "mix/pan", "mix/on", "eq/on", "dyn/on", "preamp/hpon", "gate/on"];	
 	
 var dynRatio = {"1" : [ "0" , "1.1 : 1"], "2" : [ "1" , "1.3 : 1"], "3" : [ "2" , "1.5 : 1"], "4" : [ "3" , "2.0 : 1"], "5" : [ "4" , "2.5 : 1"],
 	"6" : [ "5" , "3.0 : 1"], "7" : [ "6" , "4.0 : 1"], "8" : [ "7" , "5.0 : 1"], "9" : [ "8" , "7.0 : 1"], "10" : [ "9" , "10 : 1"],
@@ -136,7 +145,7 @@ var eqFilter = {"1" : [ "0" , "LoCut"], "2" : [ "1" , "Lo-Shelf"], "3" : [ "2" ,
 		
 // These messages can be displayed in the Info-Tab !!
 var message = [
-	"Any Personal Message" , "Message1" , "Message2", "Informations", "Other Infos 1", "Any Personal Message" ];
+	"Any Personal Message" , "Message1" , "Message2", "Informations", "Other Infos 1", "Show Personal Messages" ];
 	
 // These messages will be displayed in the Alert-Tabs !!
 var alerts = [
@@ -153,14 +162,16 @@ function init() {
 //	local.register(snapname, "snapnom");
 
 // Insert Parameters======>>>>>>>>>>>>>>>>>>>>>>>>
+//	Test = local.values.addTrigger("Tester", "Reset all the Value-Fields !!" , false);
 //	Advice = local.parameters.addStringParameter("After Changing above", "Alert","You must reload the session");
 	SelChanParams = local.parameters.addBoolParameter("Show SelChan Values", "", true);
 	ShowNames = local.parameters.addBoolParameter("Show Names", "Show Names", true);
-	ShowInfos = local.parameters.addBoolParameter("Show Infos", "Show Informations", false);
 	ShowFaders = local.parameters.addBoolParameter("Show Fader Values", "Show Fader Values", true);
+	ShowInfos = local.parameters.addBoolParameter("Show Infos", "Show Informations", false);
 	AllowSend = local.parameters.addBoolParameter("Allow SendToConsole", "Allow Send-to-Console", false);
 	RequestInfo = local.values.addStringParameter("Request Sync","Request Action", "Request and Sync");
 	SyncAll = local.values.addTrigger("Click to Sync All", "Request all the Values from the Console !!" , false);
+	
 	ResetAll = local.values.addTrigger("Click to Reset All", "Reset all the Value-Fields !!" , false);
 	SendInfo = local.values.channels.addStringParameter("Channel Info", "Send to Console Info","Sending Values here!");
 	Sending = local.values.channels.addTrigger("Click to Send Updates", "Send Updated Values to the Console" , false);
@@ -168,8 +179,10 @@ function init() {
 	
 // ============================CREATE CONTAINERS===============================
 	if (ShowInfos.get()) {
+	
 	infos=local.values.addContainer("Infos");
-		infos.setCollapsed(true); 	
+		infos.setCollapsed(true);
+		infos.addTrigger("Request Info Values", "Request Info Values from the Console !!" , false); 	
 		for (var n = 0; n < infoName.length; n++) {
 			infos.addStringParameter(infoName[n], "", ""); }  }
 		
@@ -298,8 +311,17 @@ function moduleValueChanged(value) {
 			local.values.selectedChannel.getChild(item).set(0);}  }	 
 		}		
 
-// >>>>>>>>>>>>>>>>>> REQUEST DATA FOR SELECTED CHANNEL <<<<<<<<<<<<<<<<<<<<<<<
-//Selected Channel >>>>
+//Get Infos from the Console
+		if (value.name == "requestInfoValues"){ 
+ 		local.send("/xinfo");
+ 		local.send("/status");
+ 		local.send("/-snap/name");
+ 		local.send("/-snap/index");}
+ 		
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
+//			 REQUEST DATA FOR SELECTED CHANNEL
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 	if (value.name == "clickToSync"){ 
 		var targ=local.values.selectedChannel.selectTarget.get();
 		var no=local.values.selectedChannel.selectNo.get();
@@ -332,14 +354,12 @@ function moduleValueChanged(value) {
 			local.send("/"+link+"/eq/"+i+"/type"); }		
 		}
 
-// >>>>>>>>>>>>>>>>>> REQUEST SYNC ALL <<<<<<<<<<<<<<<<<<<<<<<		
-//Sync All Channel Strips
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+// 						 REQUEST SYNC ALL 
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
+
  	if (value.name == "clickToSyncAll"){ 
 
- 		local.send("/xinfo");
- 		local.send("/status");
- 		local.send("/-snap/name");
- 		local.send("/-snap/index");
 // set Advices and Alerts
  		var alert = alerts[0];
  		local.values.requestSync.set(alert) ;
@@ -348,37 +368,35 @@ function moduleValueChanged(value) {
  		var alert = alerts[2];
  		local.values.channels.advice.set(alert) ;
 	
-// you can customize and choose how many and what messages you wann show up in the "Infos-Fiels"
-/*		local.values.infos.info15.set(text);
-		var text = message[1];
-		local.values.infos.info16.set(text);   }
-*/
 
 // >>>>>>>>>>>>>>>>>> SUBSCRIBE ACTIONS <<<<<<<<<<<<<<<<<<<<<<<<<<
 //Channels		
 		for(var i=1; i <=16; i++) {
  		if (i<10){n="0"+i;} else{n=i;}
-		local.send("/subscribe","/ch/"+n+"/"+subscrParam[0]);
-		local.send("/subscribe","/ch/"+n+"/"+subscrParam[1]);
-		local.send("/subscribe","/ch/"+n+"/"+subscrParam[2]);
-		local.send("/subscribe","/ch/"+n+"/"+subscrParam[3]);
-		local.send("/subscribe","/ch/"+n+"/"+subscrParam[4]);
-		local.send("/subscribe","/ch/"+n+"/"+subscrParam[5]);
-		local.send("/subscribe","/ch/"+n+"/"+subscrParam[6]);
-		local.send("/subscribe","/ch/"+n+"/"+subscrParam[7]);}
+		local.send("/subscribe","/ch/"+n+"/"+paramLink[0]);
+		local.send("/subscribe","/ch/"+n+"/"+paramLink[1]);
+		local.send("/subscribe","/ch/"+n+"/"+paramLink[2]);
+		local.send("/subscribe","/ch/"+n+"/"+paramLink[3]);
+		local.send("/subscribe","/ch/"+n+"/"+paramLink[4]);
+		local.send("/subscribe","/ch/"+n+"/"+paramLink[5]);
+		local.send("/subscribe","/ch/"+n+"/"+paramLink[6]);
+		local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);}
 // Bus		
 		for(var i=1; i <=4; i++) {
-		local.send("/subscribe","/bus/"+i+"/"+subscrParam[0]);
-		local.send("/subscribe","/bus/"+i+"/"+subscrParam[1]);
-		local.send("/subscribe","/bus/"+i+"/"+subscrParam[2]);
-		local.send("/subscribe","/bus/"+i+"/"+subscrParam[3]);
-		local.send("/subscribe","/bus/"+i+"/"+subscrParam[4]);
-		local.send("/subscribe","/bus/"+i+"/"+subscrParam[5]);}
+		local.send("/subscribe","/bus/"+i+"/"+paramLink[0]);
+		local.send("/subscribe","/bus/"+i+"/"+paramLink[1]);
+		local.send("/subscribe","/bus/"+i+"/"+paramLink[2]);
+		local.send("/subscribe","/bus/"+i+"/"+paramLink[3]);
+		local.send("/subscribe","/bus/"+i+"/"+paramLink[4]);
+		local.send("/subscribe","/bus/"+i+"/"+paramLink[5]);}
 // Fx-Rtn and DCA 			
 		for(var i=1; i <=4; i++) {
-		local.send("/subscribe","/rtn/"+i+"/"+subscrParam[1]);
-		local.send("/subscribe","/dca/"+i+"/fader");}		 
-		local.send("/subscribe","/rtn/aux/"+subscrParam[1]);
+		local.send("/subscribe","/rtn/"+i+"/config/name");
+		local.send("/subscribe","/rtn/"+i+"/mix/fader");
+		local.send("/subscribe","/dca/"+i+"/config/name");
+		local.send("/subscribe","/dca/"+i+"/fader");}
+		local.send("/subscribe","/rtn/aux/config/name");		 
+		local.send("/subscribe","/rtn/aux/mix/fader");
 // Main LR		
 		local.send("/subscribe","/lr/config/name");
 		local.send("/subscribe","/lr/mix/fader");
@@ -388,7 +406,7 @@ function moduleValueChanged(value) {
 		local.send("/subscribe","/lr/dyn/on");	
 /*							
 		for(var i=0 ; i < 6; i++) {
-		var link = subscrParam[i] ;
+		var link = paramLink[i] ;
 		local.send("/lr/"+link+" 50");}
 */	
 }	
@@ -402,6 +420,7 @@ function moduleValueChanged(value) {
 		local.values.channels.advice.set("Values were sent !!") ;
 		
 // >>>>>>>>>>>> Sending Function
+// Name
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Name').get();
  		if (i<10){n="0"+i;} else{n=i;}
@@ -411,71 +430,69 @@ function moduleValueChanged(value) {
 		local.send("/bus/"+i+"/config/name", val);}
 		var val = local.values.channels.mainLR.getChild('Name').get();
 		local.send("/lr/config/name", val);
-		
+//Fader		
 		for(var i=1; i <=16; i++) {
-		var d = local.values.channels.getChild('Channel'+i).getChild('Fader').get();
-		if (d <= -60)  {var f = (d + 90) / 480;}
-		else if (d <= -30) {var f = (d + 70) / 160;}
-		else if (d <= -10) {var f = (d + 50) / 80;}
-		else if (d <= 10) {var f = (d + 30) / 40;}
-		
+		var db = local.values.channels.getChild('Channel'+i).getChild('Fader').get();
+		var f = fader_float(db) ;
 		if (i<10){n="0"+i;} else{n=i;}
-		local.send("/ch/"+n+"/mix/fader", f);}
-		
+		local.send("/ch/"+n+"/mix/fader", f);}		
 		for(var i=1; i <=6; i++) {
-		var d = local.values.channels.getChild('Bus'+i).getChild('Fader').get();
-		if (d <= -60)  {var f = (d + 90) / 480;}
-		else if (d <= -30) {var f = (d + 70) / 160;}
-		else if (d <= -10) {var f = (d + 50) / 80;}
-		else if (d <= 10) {var f = (d + 30) / 40;}
+		var db = local.values.channels.getChild('Bus'+i).getChild('Fader').get();
+		var f = fader_float(db) ;
 		local.send("/bus/"+i+"/mix/fader", f);}
-		
+		var db = local.values.channels.getChild('MainLR').getChild('Fader').get();
+		var f = fader_float(db) ;
+		local.send("/lr/mix/fader", f);
+// Pan		
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Pan').get();
 		val=(val+50)/100 ;
 		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/ch/"+n+"/mix/pan", val);}
-		
+// Mute		
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Mute').get();
 		val=1-val ;
 		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/ch/"+n+"/mix/on", val);}
-		
 		for(var i=1; i <=6; i++) {
 		var val = local.values.channels.getChild('Bus'+i).getChild('Mute').get();
 		val=1-val ;
 		local.send("/bus/"+i+"/mix/on", val);}
-		
+		var val = local.values.channels.getChild('MainLR').getChild('Mute').get();
+		val=1-val ;
+		local.send("/lr/mix/on", val);
+// EQ-On		
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('EQ').get();
 		if (i<10){n="0"+i;} else{n=i;}
-		local.send("/ch/"+n+"/eq/on", val);}
-		
+		local.send("/ch/"+n+"/eq/on", val);}		
 		for(var i=1; i <=6; i++) {
 		var val = local.values.channels.getChild('Bus'+i).getChild('EQ').get();
 		local.send("/bus/"+i+"/eq/on", val);}
-		
+		var val = local.values.channels.getChild('MainLR').getChild('EQ').get();
+		local.send("/lr/eq/on", val);
+// LoCut-On		
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('LoCut').get();
 		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/ch/"+n+"/preamp/hpon", val);}
-		
+// Dyn-On				
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Dyn').get();
 		if (i<10){n="0"+i;} else{n=i;}
-		local.send("/ch/"+n+"/dyn/on", val);}
-		
+		local.send("/ch/"+n+"/dyn/on", val);}		
 		for(var i=1; i <=6; i++) {
 		var val = local.values.channels.getChild('bus'+i).getChild('Dyn').get();
 		local.send("/bus/"+i+"/dyn/on", val);}
-		
+		var val = local.values.channels.getChild('MainLR').getChild('Dyn').get();
+		local.send("/lr/dyn/on", val);		
+// Gate-On		
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Gate').get();
 		if (i<10){n="0"+i;} else{n=i;}
-		local.send("/ch/"+n+"/gate/on", val);} }
-		
-		} 		 	
+		local.send("/ch/"+n+"/gate/on", val);}
+	} } 		 	
  }
  
 //============================================================
@@ -492,23 +509,11 @@ function update(deltaTime) {
 function keepAlive() {
 		local.send("/xremote") ;
 //		local.send("/renew"); // use this for permanent feedback ! this may slow down Chataigne !!
-		
 }
-
-function gainCalculate(f) {
-if (f >= 0.5) {var db=(f * 40)-30;}
-		else if(f >=0.25) {var db=(f * 80)-50;}
-		else if(f >=0.0625) {var db=(f * 160)-70;}
-		else if (f >= 0.0) {var db=(f * 480)-90;}
-		db= (Math.round(db*10))/10;}
 
 //============================================================
 //							OSC EVENTS
 //============================================================
-
-/*  function snapnom(address, args)
-{ 		local.values.infos.info12.set(args[0]);
-		snap = args[0]; } */ 
 
 function oscEvent(address, args) { 
 
@@ -525,54 +530,43 @@ function oscEvent(address, args) {
 		var n=4 ;
 		var child = infoName[n].split(" ").join("") ; 
 		local.values.infos.getChild(child).set(args[0]);}
-		  
+// Get Snapshot Name		  
 		if (address== snapindex){
 		snap = args[0];}
 		if (address== snapname){
 		var spname = snap+"-"+args[0]; ;
 		var child = infoName[5].split(" ").join("") ;
 		local.values.infos.getChild(child).set(spname);}
-		  }
-			
-//========================== NAMES >>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	if (ShowNames.get()) {
-		for(var i=0; i <16; i++) {
-		var m =i+1 ;
-		if (m<10) {n="0"+m; } else {n=m ;}
-		var child = mixerNames[i].split(" ").join("") ;
-		if (address == "/ch/"+n+"/config/name") {
-		local.values.names.getChild(child).set(args[0]);
-		local.values.channels.getChild('Channel'+m).getChild('Name').set(args[0]); } }		
-		if (address == "/rtn/aux/config/name") {
-		var child = mixerNames[16].split(" ").join("") ;
-		local.values.names.getChild(child).set(args[0]); }		
-		for(var i=17; i <21; i++) {
-		var n =i-16 ;
-		var child = mixerNames[i].split(" ").join("") ;
-		if (address == "/rtn/"+n+"/config/name") {
-		local.values.names.getChild(child).set(args[0]);} }		
-		for(var i=21; i <27; i++) {
-		var n =i-20 ;
-		var child = mixerNames[i].split(" ").join("") ;
-		if (address == "/bus/"+n+"/config/name") {
-		local.values.names.getChild(child).set(args[0]); 
-		local.values.channels.getChild('Bus'+n).getChild('Name').set(args[0]);} }		
-		if (address == "/lr/config/name") {
-		var child = mixerNames[27].split(" ").join("") ;
-		local.values.names.getChild(child).set(args[0]); 
-		local.values.channels.mainLR.getChild('Name').set(args[0]); }
-		for(var i=28; i <32; i++) {
-		var n =i-27 ;
-		var child = mixerNames[i].split(" ").join("") ;
-		if (address == "/dca/"+n+"/config/name") {
-		local.values.names.getChild(child).set(args[0]); 
-		local.values.channels.getChild('Bus'+n).getChild('Name').set(args[0]);} }	
 		
-		}
+		var text = message[5];
+		local.values.infos.advice.set(text);
+// you can customize and choose how many and what messages you wann show up in the "Infos-Fiels"
+/*		local.values.infos.info15.set(text);
+		var text = message[1];
+		local.values.infos.info16.set(text);   }
+*/
+	}
+			
+//========================== NAMES INSERT >>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	if (ShowNames.get()) {
+		for (var n = 0; n < mixerNames.length; n++) {
+		var addr1 = mixerLinks[n];
+		if (address == addr1 + paramLink[0]) {
+		var child = mixerNames[n].split(" ").join("") ;
+		local.values.names.getChild(child).set(args[0]);
+// Channels Container		
+		var m = n+1;
+		if (m<=16) {
+		local.values.channels.getChild('Channel'+m).getChild('Name').set(args[0]);}
+		if (m >21 && m<28) { m = m-21;
+		local.values.channels.getChild('Bus'+m).getChild('Name').set(args[0]);}
+		if (m == 28) {
+		local.values.channels.getChild('MainLR').getChild('Name').set(args[0]);}
+		} }   }
+		
+		
 //============================ FADERS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	if (ShowFaders.get()) {	
-	
-				
+	if (ShowFaders.get()) {			
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/mix/fader") {
@@ -599,28 +593,16 @@ function oscEvent(address, args) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/mix/fader") {
 		var f =args[0];
-		if (f >= 0.5) {var db=(f * 40)-30;}
-		else if(f >=0.25) {var db=(f * 80)-50;}
-		else if(f >=0.0625) {var db=(f * 160)-70;}
-		else if (f >= 0.0) {var db=(f * 480)-90;}
-		d= (Math.round(db*10))/10;	
+		db = fader_db(f);
 		local.values.channels.getChild('Channel'+i).getChild('Fader').set(db);} }
 		for(var i=1; i <=6; i++) {
 		if (address == "/bus/"+i+"/mix/fader") {
 		var f =args[0];	
-		if (f >= 0.5) {var db=(f * 40)-30;}
-		else if(f >=0.25) {var db=(f * 80)-50;}
-		else if(f >=0.0625) {var db=(f * 160)-70;}
-		else if (f >= 0.0) {var db=(f * 480)-90;}
-		d= (Math.round(db*10))/10;		
+		db = fader_db(f);	
 		local.values.channels.getChild('Bus'+i).getChild('Fader').set(db);} }		
 		if (address == "/lr/mix/fader") {
-		var f =args[0];	
-		if (f >= 0.5) {var db=(f * 40)-30;}
-		else if(f >=0.25) {var db=(f * 80)-50;}
-		else if(f >=0.0625) {var db=(f * 160)-70;}
-		else if (f >= 0.0) {var db=(f * 480)-90;}
-		d= (Math.round(db*10))/10;
+		var f =args[0];
+		db = fader_db(f);	
 		local.values.channels.mainLR.fader.set(db);}						
 //Pan				
 		for(var i=1; i <=16; i++) {
@@ -688,19 +670,13 @@ function oscEvent(address, args) {
 		if (address == "/"+link+"/config/name") {
 		local.values.selectedChannel.label.set(args[0]);}		
 		if (address == "/"+link+"/mix/fader") {
-		var f =args[0];					
-	if (f >= 0.5) {var d=(f * 40)-30;}
-		else if(f >=0.25 && f <0.5) {var d=(f * 80)-50;}
-		else if(f >=0.0625 && f <0.25) {var d=(f * 160)-70;}
-		else if (f >= 0.0 && f <0.0625) {var d=(f * 480)-90;}
-		d= Math.round(d*10)/10;				
-		local.values.selectedChannel.fader.set(d+" db");}
+		var f =args[0];
+		db = fader_db(f);					
+		local.values.selectedChannel.fader.set(db+" db");}
 //Pan
 		if (address == "/"+link+"/mix/pan") {
-		var pan = Math.round(args[0]*100-50) ;
-		if (pan == 0){pan = "C";}
-		else if (pan < 0){pan = pan+"  L";}
-		else if (pan > 0){pan = pan+"  R";}
+		var val = args[0] ;
+		pan = pan_txt(val);
 		local.values.selectedChannel.pan.set(pan);}
 //ST, EQ, Dyn, Gate-on
 		if (address == "/"+link+"/mix/on") {
@@ -830,6 +806,33 @@ function oscEvent(address, args) {
 		local.values.selectedChannel.getChild('FreqEq'+i).set("");
 		local.values.selectedChannel.getChild('QEq'+i).set("");
 		local.values.selectedChannel.getChild('TypeEq'+i).set("");}}
+}
+
+///===================  CONVERTING FUNCTIONS ==================
+ 
+function fader_db(f) {
+	if (f >= 0.5) {var d=(f * 40)-30;}
+		else if(f >=0.25) {var d=(f * 80)-50;}
+		else if(f >=0.0625) {var d=(f * 160)-70;}
+		else if (f >= 0.0) {var d=(f * 480)-90;}
+		d= (Math.round(d*10))/10;
+		return d;
+}
+
+function fader_float(db) {
+	if (db <= -60)  {var f = (db + 90) / 480;}
+		else if (db <= -30) {var f = (db + 70) / 160;}
+		else if (db <= -10) {var f = (db + 50) / 80;}
+		else if (db <= 10) {var f = (db + 30) / 40;}
+		return f;
+}
+
+function pan_txt(pan) {
+		var pan = Math.round(args[0]*100-50) ;
+		if (pan == 0){pan = "C";}
+		else if (pan < 0){pan = pan+"  L";}
+		else if (pan > 0){pan = pan+"  R";}
+		return pan ;
 }
 
 //=========================================================
