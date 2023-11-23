@@ -13,7 +13,7 @@ To show the consoles values, be shure that the concerned Radio-Buttons are check
 When the MR-Module is added to the session the Info-Container is disabled and hidden. To activate it, check the concerned Radio-Button, save the session and reload it... !   
 The **"Click to Reset All"** Button will reset ALL value-fields in the Containers ! But will NOT affect any value on the console as it does not send Data outside Chataigne !  
 
-You can also send values directly from the **"Channels-Container"** to the console, for example after changing a value in a given Channel Field in Chataigne ! Checking the Radio Button **"Allow Send-to-Console"** will activate this feature -> but does not send any data yet ! !   
+You can also send values directly from the **"Channels-Container"** to the console, for example after changing a value in a given Channel Field in Chataigne ! Checking the Radio Button **"Allow Send-to-Console"** will activate this feature -> but does not send any data yet, if the Button is unchecked ! !   
 Please use this feature carefully, as you may erase settings and values on the console !!  For example if you hit "SEND" before having any datas and values in the fields, this will indeed results in a sort of "RESET" !! In fact, the function **"Click To Send Updates"** will send all the values (and also the "zero-values" !!) of all the Channel-Container-Fields at once to the console !! And if the fields are empty (or set to zero), the result is a complète RESET of the Console's Channels Values !
 But this concerns only the container **"Channels"** !       
 The best way to proceed is :  
