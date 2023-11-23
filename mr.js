@@ -27,7 +27,7 @@ var mixerNames = [
 var mixerLinks = [
 	"/ch/01/" , "/ch/02/" , "/ch/03/" , "/ch/04/" , "/ch/05/" , "/ch/06/" , "/ch/07/" , "/ch/08/" , 
 	"/ch/09/" , "/ch/10/" , "/ch/11/" , "/ch/12/" , "/ch/13/" , "/ch/14/" , "/ch/15/" , "/ch/16/" ,
-	"/rtn/aux/" , "/rtn/01/" , "/rtn/02/" , "/rtn/03/" , "/rtn/04/" , 
+	"/rtn/aux/" , "/rtn/1/" , "/rtn/2/" , "/rtn/3/" , "/rtn/4/" , 
 	"/bus/1/" , "/bus/2/" , "/bus/3/" , "/bus/4/" , "/bus/5/" , "/bus/6/" , 
 	"/lr/" , "/dca/1/" , "/dca/2/" , "/dca/3/" , "/dca/4/"];	
 var infoName = [
@@ -555,13 +555,13 @@ function oscEvent(address, args) {
 		var child = mixerNames[n].split(" ").join("") ;
 		local.values.names.getChild(child).set(args[0]);
 // Channels Container		
-		var m = n+1;
+/*		var m = n+1;
 		if (m<=16) {
 		local.values.channels.getChild('Channel'+m).getChild('Name').set(args[0]);}
 		if (m >21 && m<28) { m = m-21;
 		local.values.channels.getChild('Bus'+m).getChild('Name').set(args[0]);}
 		if (m == 28) {
-		local.values.channels.getChild('MainLR').getChild('Name').set(args[0]);}
+		local.values.channels.getChild('MainLR').getChild('Name').set(args[0]);} 		*/
 		} }   }
 		
 		
