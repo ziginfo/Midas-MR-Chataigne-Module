@@ -5,7 +5,6 @@ var SyncInfos;
 var ResetAll;
 var SelChanParams;
 var ShowInfos;
-var ShowNames;
 var AllowSend ;
 var paramLink ;
 var dynRatio ;
@@ -22,13 +21,13 @@ var mixerNames = [
 	"Channel 1" , "Channel 2" , "Channel 3" , "Channel 4" , "Channel 5" , "Channel 6" , "Channel 7" , "Channel 8" , 
 	"Channel 9" , "Channel 10" , "Channel 11" , "Channel 12" , "Channel 13" , "Channel 14" , "Channel 15" , "Channel 16" , 
 	"Aux USB" , "FX Return 1" , "FX Return 2" , "FX Return 3" , "FX Return 4" , 
-	"Bus 1" , "Bus 2" , "Bus 3" , "Bus 4" , 
+	"Bus 1" , "Bus 2" , "Bus 3" , "Bus 4" , "Bus 5" , "Bus 6" , 
 	"Main LR" , "DCA 1" , "DCA 2" , "DCA 3" , "DCA 4"];	
 var mixerLinks = [
 	"/ch/01/","/ch/02/","/ch/03/","/ch/04/","/ch/05/","/ch/06/","/ch/07/","/ch/08/",
 	"/ch/09/","/ch/10/","/ch/11/","/ch/12/","/ch/13/","/ch/14/","/ch/15/","/ch/16/" ,
 	"/rtn/aux/","/rtn/1/","/rtn/2/","/rtn/3/","/rtn/4/",
-	"/bus/1/","/bus/2/","/bus/3/","/bus/4/", "/lr/","/dca/1/","/dca/2/","/dca/3/","/dca/4/"];	
+	"/bus/1/","/bus/2/","/bus/3/","/bus/4/","/bus/5/","/bus/6/","/lr/","/dca/1/","/dca/2/","/dca/3/","/dca/4/"];	
 var infoName = [
 	"Device IP" , "Device Name" , "Device Model" , "Device Version" , "Device Status" , "Snapshot Name", "Advice" , "Info 1" , 
 	"Info 2" , "Info 3" , "Info 4" , "Info 5" , "Info 6" , "Info 7" , "Info 8"];
@@ -161,11 +160,7 @@ function init() {
 //	local.register(snapname, "snapnom");
 
 // Insert Parameters======>>>>>>>>>>>>>>>>>>>>>>>>
-//	Test = local.values.addTrigger("Tester", "Reset all the Value-Fields !!" , false);
-//	Advice = local.parameters.addStringParameter("After Changing above", "Alert","You must reload the session");
 	SelChanParams = local.parameters.addBoolParameter("Show SelChan Values", "", true);
-	ShowNames = local.parameters.addBoolParameter("Show Names", "Show Names", true);
-	ShowFaders = local.parameters.addBoolParameter("Show Fader Values", "Show Fader Values", true);
 	ShowInfos = local.parameters.addBoolParameter("Show Infos", "Show Informations", false);
 	AllowSend = local.parameters.addBoolParameter("Allow SendToConsole", "Allow Send-to-Console", false);
 	RequestInfo = local.values.addStringParameter("Request Sync","Request Action", "Request and Sync");
@@ -554,7 +549,7 @@ function oscEvent(address, args) {
 	}
 			
 //========================== NAMES INSERT >>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	if (ShowNames.get()) {
+	
 		for (var n = 0; n < mixerNames.length; n++) {
 		var addr1 = mixerLinks[n];
 		if (address == addr1 + paramLink[0]) {
@@ -568,22 +563,15 @@ function oscEvent(address, args) {
 		local.values.channels.getChild('Bus'+m).getChild('Name').set(args[0]);}
 		if (m == 28) {
 		local.values.channels.getChild('MainLR').getChild('Name').set(args[0]);} 		
-		} }   }
+		} }   
 				
 //============================ FADERS INSERT>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	if (ShowFaders.get()) {
-		for (var n = 0; n < mixerNames.length -5; n++) {
+		for (var n = 0; n < mixerNames.length; n++) {
 		var addr1 = mixerLinks[n];
-		if (addr1 == "/dca/") {var param = "fader";} else { param = "mix/fader";};
+		if (addr1 == "/dca/1/" || addr1 == "/dca/2/" || addr1 == "/dca/3/" || addr1 == "/dca/4/") {var param = "fader";} else { param = "mix/fader";};
 		if (address == addr1 + param) {
 		var child = mixerNames[n].split(" ").join("") ;
 		local.values.faders.getChild(child).set(args[0]); } } 
-		if (address == "/lr/mix/fader") {
-		local.values.faders.mainLR.set(args[0]); } 
-		for (var i = 1; i <= 4; i++) {
-		if (address == "/dca/"+i+"/fader") {
-		local.values.faders.getChild('DCA'+i).set(args[0]); }}
-		}
 
 // ============================ CHANNELS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // Faders
