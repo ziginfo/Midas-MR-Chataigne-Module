@@ -22,14 +22,13 @@ var mixerNames = [
 	"Channel 1" , "Channel 2" , "Channel 3" , "Channel 4" , "Channel 5" , "Channel 6" , "Channel 7" , "Channel 8" , 
 	"Channel 9" , "Channel 10" , "Channel 11" , "Channel 12" , "Channel 13" , "Channel 14" , "Channel 15" , "Channel 16" , 
 	"Aux USB" , "FX Return 1" , "FX Return 2" , "FX Return 3" , "FX Return 4" , 
-	"Bus 1" , "Bus 2" , "Bus 3" , "Bus 4" , "Bus 5" , "Bus 6" , 
+	"Bus 1" , "Bus 2" , "Bus 3" , "Bus 4" , 
 	"Main LR" , "DCA 1" , "DCA 2" , "DCA 3" , "DCA 4"];	
 var mixerLinks = [
-	"/ch/01/" , "/ch/02/" , "/ch/03/" , "/ch/04/" , "/ch/05/" , "/ch/06/" , "/ch/07/" , "/ch/08/" , 
-	"/ch/09/" , "/ch/10/" , "/ch/11/" , "/ch/12/" , "/ch/13/" , "/ch/14/" , "/ch/15/" , "/ch/16/" ,
-	"/rtn/aux/" , "/rtn/1/" , "/rtn/2/" , "/rtn/3/" , "/rtn/4/" , 
-	"/bus/1/" , "/bus/2/" , "/bus/3/" , "/bus/4/" , "/bus/5/" , "/bus/6/" , 
-	"/lr/" , "/dca/1/" , "/dca/2/" , "/dca/3/" , "/dca/4/"];	
+	"/ch/01/","/ch/02/","/ch/03/","/ch/04/","/ch/05/","/ch/06/","/ch/07/","/ch/08/",
+	"/ch/09/","/ch/10/","/ch/11/","/ch/12/","/ch/13/","/ch/14/","/ch/15/","/ch/16/" ,
+	"/rtn/aux/","/rtn/1/","/rtn/2/","/rtn/3/","/rtn/4/",
+	"/bus/1/","/bus/2/","/bus/3/","/bus/4/", "/lr/","/dca/1/","/dca/2/","/dca/3/","/dca/4/"];	
 var infoName = [
 	"Device IP" , "Device Name" , "Device Model" , "Device Version" , "Device Status" , "Snapshot Name", "Advice" , "Info 1" , 
 	"Info 2" , "Info 3" , "Info 4" , "Info 5" , "Info 6" , "Info 7" , "Info 8"];
@@ -188,20 +187,18 @@ function init() {
 		
 //========>>>>>Names Container		
 	names=local.values.addContainer("Names");
-		names.setCollapsed(true);	
+		names.setCollapsed(true);
+		names.addTrigger("Sync Names", "Get Names from the Console" , false);	
 		for (var n = 0; n < mixerNames.length; n++) {
-			names.addStringParameter(mixerNames[n], "", ""); } 
-
+			names.addStringParameter(mixerNames[n], "", ""); }
+			
 //===========>>>>>Faders Container		
-	faders = local.values.faders.addContainer("Channel Faders");
-		faders.setCollapsed(true);	
-		for (var n = 0; n < mixerNames.length-11; n++) {
-			faders.addFloatParameter(mixerNames[n], "", 0, 0, 1); } 		
-	faders = local.values.faders.addContainer("Bus DCA Faders");
+	faders = local.values.addContainer("Faders");
 		faders.setCollapsed(true);
-		for (var n = 21; n < mixerNames.length; n++) {
+		faders.addTrigger("Sync Faders", "Get Fader Values from the Console" , false);	
+		for (var n = 0; n < mixerNames.length; n++) {
 			faders.addFloatParameter(mixerNames[n], "", 0, 0, 1); } 
-		
+				
 //=========================CHANNEL STRIPS=================================
 	
 		for (var i = 1; i<=16; i++) {
@@ -269,14 +266,12 @@ function moduleValueChanged(value) {
 		child = mixerNames[n].split(" ").join("");
 		local.values.names.getChild(child).set("");  }
 //reset Faders
-		for (var n = 0; n < mixerNames.length-11; n++) {
+		for (var n = 0; n < mixerNames.length; n++) {
 		child = mixerNames[n].split(" ").join("");
-		local.values.faders.channelFaders.getChild(child).set(0);  }
-		for (var n = 21; n < mixerNames.length; n++) {
-		child = mixerNames[n].split(" ").join("");
-		local.values.faders.busDCAFaders.getChild(child).set(0);  }
+		local.values.faders.getChild(child).set(0);  }
+		
 //reset Channels		
-		for (var n = 0; n < 28; n++) {
+		for (var n = 0; n < 26; n++) {
 		if (n > 15 && n<21){} else {
 		child = mixerNames[n].split(" ").join("");
 		local.values.channels.getChild(child).getChild('Name').set("");
@@ -354,6 +349,21 @@ function moduleValueChanged(value) {
 			local.send("/"+link+"/eq/"+i+"/type"); }		
 		}
 
+						  
+// >>>>>>>>>>>>>>>>>>>>>SYNC NAMES>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
+ 	if (value.name == "syncNames"){
+ 	for (var n = 0; n < mixerNames.length; n++) {
+		var addr1 = mixerLinks[n];
+		local.send (addr1 + paramLink[0]) ; } }
+		// >>>>>>>>>>>>>>>>>>>>>SYNC NAMES>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
+ 	if (value.name == "syncFaders"){
+ 	for (var n = 0; n < mixerNames.length; n++) {
+		var addr1 = mixerLinks[n];
+		if (addr1 == "/dca/1/" || addr1 == "/dca/2/" || addr1 == "/dca/3/" || addr1 == "/dca/4/"){var param ="fader" ;}
+		else {param = "mix/fader" ;}
+		local.send(addr1 + param) ; } }
+ 	
+ 	
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // 						 REQUEST SYNC ALL 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
@@ -404,11 +414,7 @@ function moduleValueChanged(value) {
 		local.send("/subscribe","/lr/mix/on");
 		local.send("/subscribe","/lr/eq/on");
 		local.send("/subscribe","/lr/dyn/on");	
-/*							
-		for(var i=0 ; i < 6; i++) {
-		var link = paramLink[i] ;
-		local.send("/lr/"+link+" 50");}
-*/	
+	
 }	
 
 // ==================================================================
@@ -555,38 +561,30 @@ function oscEvent(address, args) {
 		var child = mixerNames[n].split(" ").join("") ;
 		local.values.names.getChild(child).set(args[0]);
 // Channels Container		
-/*		var m = n+1;
+		var m = n+1;
 		if (m<=16) {
 		local.values.channels.getChild('Channel'+m).getChild('Name').set(args[0]);}
 		if (m >21 && m<28) { m = m-21;
 		local.values.channels.getChild('Bus'+m).getChild('Name').set(args[0]);}
 		if (m == 28) {
-		local.values.channels.getChild('MainLR').getChild('Name').set(args[0]);} 		*/
+		local.values.channels.getChild('MainLR').getChild('Name').set(args[0]);} 		
 		} }   }
-		
-		
-//============================ FADERS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	if (ShowFaders.get()) {			
-		for(var i=1; i <=16; i++) {
-		if (i<10){n="0"+i;} else{n=i;}
-		if (address == "/ch/"+n+"/mix/fader") {
-		local.values.faders.channelFaders.getChild('Channel'+i).set(args[0]); } }		
-		for(var i=1; i <=4; i++) {
-		if (address == "/rtn/"+i+"/mix/fader") {
-		local.values.faders.channelFaders.getChild('fxReturn'+i).set(args[0]); } }		
-		if (address == "/rtn/aux/mix/fader") {
-		local.values.faders.channelFaders.auxUSB.set(args[0]);}		
-		for(var i=1; i <=6; i++) {
-		if (address == "/bus/"+i+"/mix/fader") {
-		local.values.faders.busDCAFaders.getChild('Bus'+i).set(args[0]); } }
-		if (address == "/lr/mix/fader") {
-		local.values.faders.busDCAFaders.mainLR.set(args[0]);}	
-		for(var i=1; i <=4; i++) {
-		if (address == "/dca/"+i+"/fader") {
-		local.values.faders.busDCAFaders.getChild('DCA'+i).set(0.7);} }	
-		
-		}
 				
+//============================ FADERS INSERT>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	if (ShowFaders.get()) {
+		for (var n = 0; n < mixerNames.length -5; n++) {
+		var addr1 = mixerLinks[n];
+		if (addr1 == "/dca/") {var param = "fader";} else { param = "mix/fader";};
+		if (address == addr1 + param) {
+		var child = mixerNames[n].split(" ").join("") ;
+		local.values.faders.getChild(child).set(args[0]); } } 
+		if (address == "/lr/mix/fader") {
+		local.values.faders.mainLR.set(args[0]); } 
+		for (var i = 1; i <= 4; i++) {
+		if (address == "/dca/"+i+"/fader") {
+		local.values.faders.getChild('DCA'+i).set(args[0]); }}
+		}
+
 // ============================ CHANNELS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // Faders
 		for(var i=1; i <=16; i++) {

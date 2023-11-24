@@ -45,11 +45,7 @@
 	
 		
 		
-		"Faders":{
-			"type":"Container",
-			"collapsed":true,  
-			"readonly" : true},
-			
+	
 		"Channels":{
 			"type":"Container",
 			"collapsed":true  }	,
