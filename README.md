@@ -5,12 +5,12 @@ Most of the commands and actions run for both, MR12 and MR18 (and Behringer XR12
 The Player-Functions for example are valid only for MR12   
 And please be aware that the number of available Channels and Busses etc depends on the model (MR-12 or 18; XR 12, 16, or 18) !
 
-### Updated to version 2.2  (nov 2023)
+### Updated to version 2.3  (dec 2023)
+Now we have feedback for Meters also !   
 We have Feedback from the MR/X-Air Console for Names and Fader-Levels, EQ, Mute, Dyn and Pan Status etc... 
 There is also a Feedback-Tab called **"Selected Channel"**. You can select a given channel by Target and Number and get its (pretty)full feedback as : name, fader, eq- and dyn-settings etc, etc... I will add more values later-on, bur also don't wanna overload this tab either) After changing the target or the channel-number just hit "Click To Sync" to request the new values from the console. And you can also reset the whole Selected-Channel-Form by clicking the "Reset-Button".   
 There is also a "radio-button" called "Show SelChan Values" that has to be checked to show the values.   
-
-When the MR-Module is added to the session the "Info-Tab" is disabled and hidden (by default). To activate it, just check the concerned Radio-Button, save the session and reload it..(shortcut : cmd-shift-O).     
+    
 The **"Click to Reset All"** Button will reset ALL value-fields in the Containers ! But will NOT affect any value on the console as it does not send Data outside Chataigne !  
 
 You can also send values directly from the **"Channels-Tab"** to the console, for example after having changed a value in a given Channel Field in Chataigne ! Checking the Radio Button **"Allow Send-to-Console"** will activate this feature -> but does not send any data yet, if the button is unchecked (=> default-setting) !!   

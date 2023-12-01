@@ -1,5 +1,6 @@
 // ========================== VARS ===========================
 var myParameters = {};
+var activMeters;
 var SyncAll;
 var SyncInfos;
 var ResetAll;
@@ -17,6 +18,11 @@ var snap;
 var snapname = "/-snap/name";
 var snapindex = "/-snap/index" ;
 
+var meters = [
+	"In 1", "In 2", "In 3", "In 4", "In 5", "In 6", "In 7", "In 8", "In 9", "In 10", "In 11", "In 12", "In 13", "In 14", "In 15", "In 16",
+	"Aux L", "Aux R", "FxRtn1 L", "FxRtn1 R", "FxRtn2 L", "FxRtn2 R", "FxRtn3 L", "FxRtn3 R", "FxRtn4 L", "FxRtn4 R",
+	"Bus 1", "Bus 2", "Bus 3","Bus 4", "Bus 5", "Bus 6", "FxSnd  1", "FxSnd  2", "FxSnd  3","FxSnd  4",
+	"Main L", "Main R", "Mon L", "Mon R" ];
 var mixerNames = [
 	"Channel 1" , "Channel 2" , "Channel 3" , "Channel 4" , "Channel 5" , "Channel 6" , "Channel 7" , "Channel 8" , 
 	"Channel 9" , "Channel 10" , "Channel 11" , "Channel 12" , "Channel 13" , "Channel 14" , "Channel 15" , "Channel 16" , 
@@ -27,11 +33,16 @@ var mixerLinks = [
 	"/ch/01/","/ch/02/","/ch/03/","/ch/04/","/ch/05/","/ch/06/","/ch/07/","/ch/08/",
 	"/ch/09/","/ch/10/","/ch/11/","/ch/12/","/ch/13/","/ch/14/","/ch/15/","/ch/16/" ,
 	"/rtn/aux/","/rtn/1/","/rtn/2/","/rtn/3/","/rtn/4/",
-	"/bus/1/","/bus/2/","/bus/3/","/bus/4/","/bus/5/","/bus/6/","/lr/","/dca/1/","/dca/2/","/dca/3/","/dca/4/"];	
+	"/bus/1/","/bus/2/","/bus/3/","/bus/4/","/bus/5/","/bus/6/","/lr/","/dca/1/","/dca/2/","/dca/3/","/dca/4/"];
+var channelTab = [
+	"Channel 1" , "Channel 2" , "Channel 3" , "Channel 4" , "Channel 5" , "Channel 6" , "Channel 7" , "Channel 8" , 
+	"Channel 9" , "Channel 10" , "Channel 11" , "Channel 12" , "Channel 13" , "Channel 14" , "Channel 15" , "Channel 16" ,  
+	"Bus 1" , "Bus 2" , "Bus 3" , "Bus 4" , "Bus 5" , "Bus 6" , 
+	"Main LR"];	
 var infoName = [
 	"Device IP" , "Device Name" , "Device Model" , "Device Version" , "Device Status" , "Snapshot Name", "Advice" , "Info 1" , 
 	"Info 2" , "Info 3" , "Info 4" , "Info 5" , "Info 6" , "Info 7" , "Info 8"];
-var channLabel = {
+var chanLabel = {
 	"nam"	: ["Name", "s", "label"],
 	"fad" : ["Fader", "f","fader"],
 	"pan" : ["Pan", "fp","pan"],
@@ -82,7 +93,8 @@ var selChann = {
 	"dyn.range" : ["Gate Range", "s", "gateRange", "gate/range"],
 	"dyn.mode" : ["Gate Mode", "s", "gateMode", "gate//mode"]};
 	
-var paramLink =["config/name", "mix/fader", "mix/pan", "mix/on", "eq/on", "dyn/on", "preamp/hpon", "gate/on"];	
+var paramLink =["config/name", "mix/fader", "mix/pan", "mix/on", "eq/on", "dyn/on", "preamp/hpon", "gate/on"];
+var paramName =["name", "fader", "pan", "mute", "eq", "dyn", "locut", "gate"];	
 	
 var dynRatio = {"1" : [ "0" , "1.1 : 1"], "2" : [ "1" , "1.3 : 1"], "3" : [ "2" , "1.5 : 1"], "4" : [ "3" , "2.0 : 1"], "5" : [ "4" , "2.5 : 1"],
 	"6" : [ "5" , "3.0 : 1"], "7" : [ "6" , "4.0 : 1"], "8" : [ "7" , "5.0 : 1"], "9" : [ "8" , "7.0 : 1"], "10" : [ "9" , "10 : 1"],
@@ -147,7 +159,7 @@ var message = [
 	
 // These messages will be displayed in the Alert-Tabs !!
 var alerts = [
-	 "Request Values from the Console !!" , "Send Values to the Console !" , "Be careful with this feature !!" , "Message2", "Informations","Other Infos" ];
+	 "Request Values from the Console !!" , "Send Values to the Console !" , "Be careful with this feature !!" , "Message2" , "Informations" , "Other Infos" ];
 
 //====================================================================
 //						INITIAL FUNCTIONS 
@@ -156,38 +168,33 @@ var alerts = [
 //  initial functions
 function init() {
 
-//global vars
-//	local.register(snapname, "snapnom");
-
-// Insert Parameters======>>>>>>>>>>>>>>>>>>>>>>>>
+// Insert Parameter Buttons & Infos======>>>>>>>>>>>>>>>>>>>>>>>>
+	activMeters = local.parameters.addBoolParameter("Use Meters", "Ask the console to send meters to chataigne" , false);
 	SelChanParams = local.parameters.addBoolParameter("Show SelChan Values", "", true);
 	ShowInfos = local.parameters.addBoolParameter("Show Infos", "Show Informations", false);
 	AllowSend = local.parameters.addBoolParameter("Allow SendToConsole", "Allow Send-to-Console", false);
 	RequestInfo = local.values.addStringParameter("Request Sync","Request Action", "Request and Sync");
-	SyncAll = local.values.addTrigger("Click to Sync All", "Request all the Values from the Console !!" , false);
-	
+	SyncAll = local.values.addTrigger("Click to Sync All", "Request all the Values from the Console !!" , false);	
 	ResetAll = local.values.addTrigger("Click to Reset All", "Reset all the Value-Fields !!" , false);
 	SendInfo = local.values.channels.addStringParameter("Channel Info", "Send to Console Info","Sending Values here!");
 	Sending = local.values.channels.addTrigger("Click to Send Updates", "Send Updated Values to the Console" , false);
 	Alert = local.values.channels.addStringParameter("Advice", "Alert","Request Sync First");
 	
-// ============================CREATE CONTAINERS===============================
-	if (ShowInfos.get()) {
+// =====================================================================
+// 						CREATE CONTAINERS
+// =====================================================================
 	
-	infos=local.values.addContainer("Infos");
-		infos.setCollapsed(true);
-		infos.addTrigger("Request Info Values", "Request Info Values from the Console !!" , false); 	
-		for (var n = 0; n < infoName.length; n++) {
-			infos.addStringParameter(infoName[n], "", ""); }  }
+	
+
 		
-//========>>>>>Names Container		
+//Names Container >>>>>>>>>>>>>>>>>>>>>>		
 	names=local.values.addContainer("Names");
 		names.setCollapsed(true);
 		names.addTrigger("Sync Names", "Get Names from the Console" , false);	
 		for (var n = 0; n < mixerNames.length; n++) {
 			names.addStringParameter(mixerNames[n], "", ""); }
 			
-//===========>>>>>Faders Container		
+// Faders Container>>>>>>>>>>>>>>>>>>>>>		
 	faders = local.values.addContainer("Faders");
 		faders.setCollapsed(true);
 		faders.addTrigger("Sync Faders", "Get Fader Values from the Console" , false);	
@@ -197,7 +204,7 @@ function init() {
 //=========================CHANNEL STRIPS=================================
 	
 		for (var i = 1; i<=16; i++) {
-	chan = local.values.channels.addContainer("Channel "+(i));
+	chan = local.values.channels.addContainer("Channel "+i);
 		chan.addStringParameter("Name", "","");
 		chan.addFloatParameter("Fader", "", 0);
 		chan.addFloatParameter("Pan","", 0 , -50, 50);
@@ -209,7 +216,7 @@ function init() {
 		chan.setCollapsed(true);}
 		
 		for (var i = 1; i<=6; i++) {
-	chan = local.values.channels.addContainer("Bus "+(i));
+	chan = local.values.channels.addContainer("Bus "+i);
 		chan.addStringParameter("Name", "","");
 		chan.addFloatParameter("Fader", "", 0);
 		chan.addFloatParameter("Pan","", 0 , -50, 50);
@@ -243,7 +250,21 @@ function init() {
 			else if (selChann[champs[n]][1] == "in") {
 			selchan.addIntParameter(selChann[champs[n]][0], "", 0); } 
 			else if (selChann[champs[n]][1] == "s") {
-			selchan.addStringParameter(selChann[champs[n]][0], "", ""); } }		
+			selchan.addStringParameter(selChann[champs[n]][0], "", ""); } }	
+			
+//============================ VU-METERS ==============================
+vus = local.values.addContainer("Meters");
+		vus.setCollapsed(true);
+	for (var i = 0; i < meters.length; i++) {
+		var n = meters[i];
+		var p = local.values.getChild("Meters").addFloatParameter(n,n,0, 0, 1); }
+		
+//======================= Infos Container==================================	
+	infos=local.values.addContainer("Infos");
+		infos.setCollapsed(true);
+		infos.addTrigger("Request Info Values", "Request Info Values from the Console !!" , false); 	
+		for (var n = 0; n < infoName.length; n++) {
+			infos.addStringParameter(infoName[n], "", ""); } 
 	
 }
 
@@ -274,8 +295,7 @@ function moduleValueChanged(value) {
 		local.values.channels.getChild(child).getChild('Pan').set(0);
 		local.values.channels.getChild(child).getChild('Mute').set(0);
 		local.values.channels.getChild(child).getChild('EQ').set(0);
-		local.values.channels.getChild(child).getChild('Dyn').set(0); } }
-		
+		local.values.channels.getChild(child).getChild('Dyn').set(0); } }		
 		for (var n = 0; n < 16; n++) {
 		child = mixerNames[n].split(" ").join("");
 		local.values.channels.getChild(child).getChild('LoCut').set(0);
@@ -285,11 +305,9 @@ function moduleValueChanged(value) {
 		local.values.channels.advice.set("Request Sync First") ;
 				
 	}
-// <<<<<<<<<<<RESET ALL FIN >>>>>>>>>>>>>>>>>>> 
 
 // >>>>>>>>>>>RESET SELECTED CHANNEL <<<<<<<<<<<<<<<<<<<<<<<
-	
-//Selected Channel Reset All
+
 		if (value.name == "resetValueFields"){
 		var champs = util.getObjectProperties(selChann);
 		for (var n = 0; n < champs.length; n++) {
@@ -299,8 +317,11 @@ function moduleValueChanged(value) {
 			local.values.selectedChannel.getChild(item).set("");}
 		else if (par == "b") {
 			local.values.selectedChannel.getChild(item).set(0);}  }	 
-		}		
+		}
+				
+// <<<<<<<<<<<RESET ACTIONS FIN >>>>>>>>>>>>>>>>>>>
 
+ // <<<<<<<<<<<REQUEST ACTIONS START >>>>>>>>>>>>>>>>>>>
 //Get Infos from the Console
 		if (value.name == "requestInfoValues"){ 
  		local.send("/xinfo");
@@ -317,9 +338,7 @@ function moduleValueChanged(value) {
 		var no=local.values.selectedChannel.selectNo.get();
 		if(targ=="ch" && no < 10){no = "0"+no ;} else {no=no ;}
 		if (targ=="lr") {var link = targ ;}
-		else {link = targ+"/"+no ;}	
-		
-			
+		else {link = targ+"/"+no ;}			
 			local.send("/"+link+"/config/name");
 			local.send("/"+link+"/mix/fader");
 			local.send("/"+link+"/mix/pan");
@@ -343,24 +362,22 @@ function moduleValueChanged(value) {
 			local.send("/"+link+"/eq/"+i+"/q");
 			local.send("/"+link+"/eq/"+i+"/type"); }		
 		}
-
 						  
-// >>>>>>>>>>>>>>>>>>>>>SYNC NAMES>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
+// >>>>>>>>>>>>>>>>>> SYNC NAMES>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
  	if (value.name == "syncNames"){
  	for (var n = 0; n < mixerNames.length; n++) {
 		var addr1 = mixerLinks[n];
 		local.send (addr1 + paramLink[0]) ; } }
-		// >>>>>>>>>>>>>>>>>>>>>SYNC NAMES>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
+// >>>>>>>>>>>>>>>>>> SYNC FADERS>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
  	if (value.name == "syncFaders"){
  	for (var n = 0; n < mixerNames.length; n++) {
 		var addr1 = mixerLinks[n];
 		if (addr1 == "/dca/1/" || addr1 == "/dca/2/" || addr1 == "/dca/3/" || addr1 == "/dca/4/"){var param ="fader" ;}
 		else {param = "mix/fader" ;}
-		local.send(addr1 + param) ; } }
- 	
+		local.send(addr1 + param) ; } } 	
  	
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// 						 REQUEST SYNC ALL 
+// 					REQUEST SYNC ALL 
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
 
  	if (value.name == "clickToSyncAll"){ 
@@ -373,7 +390,6 @@ function moduleValueChanged(value) {
  		var alert = alerts[2];
  		local.values.channels.advice.set(alert) ;
 	
-
 // >>>>>>>>>>>>>>>>>> SUBSCRIBE ACTIONS <<<<<<<<<<<<<<<<<<<<<<<<<<
 //Channels		
 		for(var i=1; i <=16; i++) {
@@ -408,8 +424,7 @@ function moduleValueChanged(value) {
 		local.send("/subscribe","/lr/mix/pan");
 		local.send("/subscribe","/lr/mix/on");
 		local.send("/subscribe","/lr/eq/on");
-		local.send("/subscribe","/lr/dyn/on");	
-	
+		local.send("/subscribe","/lr/dyn/on");		
 }	
 
 // ==================================================================
@@ -418,8 +433,7 @@ function moduleValueChanged(value) {
 	if (value.name == "clickToSendUpdates"){
 	if (AllowSend.get()) {
 // >>>>>>>>>>>> Alerts
-		local.values.channels.advice.set("Values were sent !!") ;
-		
+		local.values.channels.advice.set("Values were sent !!") ;		
 // >>>>>>>>>>>> Sending Function
 // Name
 		for(var i=1; i <=16; i++) {
@@ -431,8 +445,8 @@ function moduleValueChanged(value) {
 		local.send("/bus/"+i+"/config/name", val);}
 		var val = local.values.channels.mainLR.getChild('Name').get();
 		local.send("/lr/config/name", val);
-//Fader		
-		for(var i=1; i <=16; i++) {
+// Fader		
+	for(var i=1; i <=16; i++) {
 		var db = local.values.channels.getChild('Channel'+i).getChild('Fader').get();
 		var f = fader_float(db) ;
 		if (i<10){n="0"+i;} else{n=i;}
@@ -445,17 +459,17 @@ function moduleValueChanged(value) {
 		var f = fader_float(db) ;
 		local.send("/lr/mix/fader", f);
 // Pan		
-		for(var i=1; i <=16; i++) {
+	for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Pan').get();
 		val=(val+50)/100 ;
 		if (i<10){n="0"+i;} else{n=i;}
-		local.send("/ch/"+n+"/mix/pan", val);}
+		local.send("/ch/"+n+"/mix/pan", val);} 		
 // Mute		
-		for(var i=1; i <=16; i++) {
+	for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Mute').get();
 		val=1-val ;
 		if (i<10){n="0"+i;} else{n=i;}
-		local.send("/ch/"+n+"/mix/on", val);}
+		local.send("/ch/"+n+"/mix/on", val);}  
 		for(var i=1; i <=6; i++) {
 		var val = local.values.channels.getChild('Bus'+i).getChild('Mute').get();
 		val=1-val ;
@@ -464,30 +478,30 @@ function moduleValueChanged(value) {
 		val=1-val ;
 		local.send("/lr/mix/on", val);
 // EQ-On		
-		for(var i=1; i <=16; i++) {
+	for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('EQ').get();
 		if (i<10){n="0"+i;} else{n=i;}
-		local.send("/ch/"+n+"/eq/on", val);}		
+		local.send("/ch/"+n+"/eq/on", val);}	
 		for(var i=1; i <=6; i++) {
 		var val = local.values.channels.getChild('Bus'+i).getChild('EQ').get();
 		local.send("/bus/"+i+"/eq/on", val);}
 		var val = local.values.channels.getChild('MainLR').getChild('EQ').get();
 		local.send("/lr/eq/on", val);
-// LoCut-On		
-		for(var i=1; i <=16; i++) {
-		var val = local.values.channels.getChild('Channel'+i).getChild('LoCut').get();
-		if (i<10){n="0"+i;} else{n=i;}
-		local.send("/ch/"+n+"/preamp/hpon", val);}
 // Dyn-On				
-		for(var i=1; i <=16; i++) {
+	for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Dyn').get();
 		if (i<10){n="0"+i;} else{n=i;}
-		local.send("/ch/"+n+"/dyn/on", val);}		
+		local.send("/ch/"+n+"/dyn/on", val);}			
 		for(var i=1; i <=6; i++) {
 		var val = local.values.channels.getChild('bus'+i).getChild('Dyn').get();
 		local.send("/bus/"+i+"/dyn/on", val);}
 		var val = local.values.channels.getChild('MainLR').getChild('Dyn').get();
-		local.send("/lr/dyn/on", val);		
+		local.send("/lr/dyn/on", val);
+// LoCut-On		
+		for(var i=1; i <=16; i++) {
+		var val = local.values.channels.getChild('Channel'+i).getChild('LoCut').get();
+		if (i<10){n="0"+i;} else{n=i;}
+		local.send("/ch/"+n+"/preamp/hpon", val);}		
 // Gate-On		
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Gate').get();
@@ -495,21 +509,19 @@ function moduleValueChanged(value) {
 		local.send("/ch/"+n+"/gate/on", val);}
 	} } 		 	
  }
- 
 //============================================================
-//							KEEP ALIVE
+//				KEEP ALIVE -> X-Remote Loop
 //============================================================
-// Xremote loop
 function update(deltaTime) {
 		var now = util.getTime();
 		if(now > TSSendAlive) {
 		TSSendAlive = now + 8;
 		keepAlive(); }
 }
-
 function keepAlive() {
-		local.send("/xremote") ;
-//		local.send("/renew"); // use this for permanent feedback ! this may slow down Chataigne !!
+		local.send("/xremote");
+		if (activMeters.get()) {
+		local.send("/meters", "/meters/1"); }
 }
 
 //============================================================
@@ -518,15 +530,31 @@ function keepAlive() {
 
 function oscEvent(address, args) { 
 
-// infos insert
+// Vu-Meters
+	var arrayAddress = address.split("/");
+	if (address == "/meters/1") {
+		for(var i=0; i < args.length; i++) {
+			var data = args[i];
+			for (var j = 4; j+1< data.length; j=j+2) {
+				var index = parseInt(Math.floor(j/2))-2;
+				if (index < meters.length) {
+					var f = bytesToShort([data[j+0], data[j+1]]);
+				f = (f+1.5)*2 ;
+					var n = meters[index].split(" ").join("");
+					local.values.getChild("Meters").getChild(n).set(f); } } } } 
+	else { script.log(address);
+		if (["ch"].indexOf(arrayAddress[1])>=0) {
+			setValue(arrayAddress, args[0]); } }
+
+
+// Infos Insert
 	if (ShowInfos.get()) {
 	
 		if (address== "/xinfo"){ 
 		for(var i=0; i <=3; i++) {
 		var n=i ; 
 		var line = infoName[n].split(" ").join("") ;
-		local.values.infos.getChild(line).set(args[i]);}  }
-		
+		local.values.infos.getChild(line).set(args[i]);}  }		
 		if (address== "/status"){ 
 		var n=4 ;
 		var child = infoName[n].split(" ").join("") ; 
@@ -571,25 +599,21 @@ function oscEvent(address, args) {
 		if (addr1 == "/dca/1/" || addr1 == "/dca/2/" || addr1 == "/dca/3/" || addr1 == "/dca/4/") {var param = "fader";} else { param = "mix/fader";};
 		if (address == addr1 + param) {
 		var child = mixerNames[n].split(" ").join("") ;
-		local.values.faders.getChild(child).set(args[0]); } } 
-
-// ============================ CHANNELS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// Faders
-		for(var i=1; i <=16; i++) {
-		if (i<10){n="0"+i;} else{n=i;}
-		if (address == "/ch/"+n+"/mix/fader") {
+		local.values.faders.getChild(child).set(args[0]); 
+// Channels Container		
+		var m = n+1;
 		var f =args[0];
 		db = fader_db(f);
-		local.values.channels.getChild('Channel'+i).getChild('Fader').set(db);} }
-		for(var i=1; i <=6; i++) {
-		if (address == "/bus/"+i+"/mix/fader") {
-		var f =args[0];	
-		db = fader_db(f);	
-		local.values.channels.getChild('Bus'+i).getChild('Fader').set(db);} }		
-		if (address == "/lr/mix/fader") {
-		var f =args[0];
-		db = fader_db(f);	
-		local.values.channels.mainLR.fader.set(db);}						
+		if (m<=16) {
+		local.values.channels.getChild('Channel'+m).getChild('Fader').set(db);}
+		if (m >21 && m<28) { m = m-21;
+		local.values.channels.getChild('Bus'+m).getChild('Fader').set(db);}
+		if (m == 28) {
+		local.values.channels.getChild('MainLR').getChild('Fader').set(db);}
+		} } 
+
+// ============================ CHANNELS CONTAINER autres >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 //Pan				
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
@@ -652,7 +676,7 @@ function oscEvent(address, args) {
 		if (targ=="lr") {var link = targ ;}
 		else {link = targ+"/"+no ;}
 			
-//Selected Channel Name, Fader etc
+//Selected Channel Name & Fader
 		if (address == "/"+link+"/config/name") {
 		local.values.selectedChannel.label.set(args[0]);}		
 		if (address == "/"+link+"/mix/fader") {
@@ -690,23 +714,20 @@ function oscEvent(address, args) {
 		local.values.selectedChannel.gateOn.set(args[0]);}
 		if (address == "/"+link+"/gate/thr") {
 		var thr = Math.round((args[0]-1) *800)/10;
-		local.values.selectedChannel.gateThreshold.set(thr+" db");}
-		
+		local.values.selectedChannel.gateThreshold.set(thr+" db");}		
 		if (address == "/"+link+"/gate/range") {
 		var range = Math.round(args[0] *570)/10+3;
-		local.values.selectedChannel.gateRange.set(range+" db");}
-		
+		local.values.selectedChannel.gateRange.set(range+" db");}		
 		if (address == "/"+link+"/gate/mode") {
 		var mode = args[0] ;
 		for (var n = 0; n < 6; n++) {
 		if (args[0] == n) {
 		local.values.selectedChannel.gateMode.set(gateMode[n]);} }  }
-//LoCut
+//LoCut & Invert
 		if (address == "/"+link+"/preamp/hpon") {
 		local.values.selectedChannel.loCutOn.set(args[0]);}
 		if (address == "/"+link+"/preamp/invert") {	
-		local.values.selectedChannel.invert.set(args[0]);}
-		
+		local.values.selectedChannel.invert.set(args[0]);}		
 		if (address == "/"+link+"/preamp/hpf") {
 		var f= args[0];
 		var champs = util.getObjectProperties(loCutF);
@@ -714,29 +735,29 @@ function oscEvent(address, args) {
 		if (f == 0.0) { hp= 20 ;}
 		if (f >= loCutF[champs[n]][0]) { hp= loCutF[champs[n]][1] ;} 
 		if (f == 1.0) { hp= 400 ;}}
-		local.values.selectedChannel.loCutFreq.set(hp+" Hz");}		
-		
+		local.values.selectedChannel.loCutFreq.set(hp+" Hz");}				
 //Selected Channel EQ	
+//gain
 		if (targ=="lr" || targ=="bus") {var c = 6 ;} else {c=4;}	
 		for(var i=1; i <= c; i++) {
 		if (address == "/"+link+"/eq/"+i+"/g") {
 		var g = Math.round((args[0]-0.5)*300)/10 ;
 		local.values.selectedChannel.getChild('GainEq'+i).set(g+" db");}
-		
+//freq		
 		if (address == "/"+link+"/eq/"+i+"/f") {		
 		var f= args[0]; 		
 		var champs = util.getObjectProperties(freqF);
 		for (var n = 0; n < champs.length; n++) {
 		if (f >= freqF[champs[n]][0]) { tx= freqF[champs[n]][1] ;} }
 		local.values.selectedChannel.getChild('FreqEq'+i).set(tx+"  Hz");}
-		
+// q		
 		if (address == "/"+link+"/eq/"+i+"/q") {
 		var l = args[0];
 		var champs = util.getObjectProperties(freqQ);
 		for (var n = 0; n < champs.length; n++) {
 		if (l >= freqQ[champs[n]][0]) { q= freqQ[champs[n]][1] ;} }
 		local.values.selectedChannel.getChild('QEq'+i).set(q+"");}
-		
+//type		
 		if (address == "/"+link+"/eq/"+i+"/type") {
 		var filt = args[0];
 		var champs = util.getObjectProperties(eqFilter);
@@ -791,10 +812,10 @@ function oscEvent(address, args) {
 		local.values.selectedChannel.getChild('GainEq'+i).set("");
 		local.values.selectedChannel.getChild('FreqEq'+i).set("");
 		local.values.selectedChannel.getChild('QEq'+i).set("");
-		local.values.selectedChannel.getChild('TypeEq'+i).set("");}}
+		local.values.selectedChannel.getChild('TypeEq'+i).set("");}}		
 }
 
-///===================  CONVERTING FUNCTIONS ==================
+///===================  CONVERTER FUNCTIONS ==================
  
 function fader_db(f) {
 	if (f >= 0.5) {var d=(f * 40)-30;}
@@ -819,6 +840,16 @@ function pan_txt(pan) {
 		else if (pan < 0){pan = pan+"  L";}
 		else if (pan > 0){pan = pan+"  R";}
 		return pan ;
+}
+
+//--------------FLOAT TO BYTES (Meters) --------------------------
+var l = Math.pow(2,15);
+function bytesToShort(b) {
+	var f = (b[1]-128)*256 ;
+	f += b[0];
+	f = f/l;
+	// script.log(val+ " -- "+b[0]);
+	return f;
 }
 
 //=========================================================
