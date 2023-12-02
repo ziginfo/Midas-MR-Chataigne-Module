@@ -183,9 +183,6 @@ function init() {
 // =====================================================================
 // 						CREATE CONTAINERS
 // =====================================================================
-	
-	
-
 		
 //Names Container >>>>>>>>>>>>>>>>>>>>>>		
 	names=local.values.addContainer("Names");
@@ -253,11 +250,13 @@ function init() {
 			selchan.addStringParameter(selChann[champs[n]][0], "", ""); } }	
 			
 //============================ VU-METERS ==============================
-vus = local.values.addContainer("Meters");
-		vus.setCollapsed(true);
-	for (var i = 0; i < meters.length; i++) {
+	vus = local.values.addContainer("Meters");
+		vus.setCollapsed(true);		
+		for (var i = 0; i < meters.length; i++) {
 		var n = meters[i];
-		var p = local.values.getChild("Meters").addFloatParameter(n,n,0, 0, 1); }
+//		var p = local.values.getChild("Meters").addFloatParameter(n,n,0, 0, 1);
+		var p = local.values.getChild("Meters").addFloatParameter(n,n,0, -60, -1);  
+		p.setAttribute("readonly" ,true);}
 		
 //======================= Infos Container==================================	
 	infos=local.values.addContainer("Infos");
@@ -531,6 +530,7 @@ function keepAlive() {
 function oscEvent(address, args) { 
 
 // Vu-Meters
+	if (activMeters.get()) {
 	var arrayAddress = address.split("/");
 	if (address == "/meters/1") {
 		for(var i=0; i < args.length; i++) {
@@ -539,12 +539,13 @@ function oscEvent(address, args) {
 				var index = parseInt(Math.floor(j/2))-2;
 				if (index < meters.length) {
 					var f = bytesToShort([data[j+0], data[j+1]]);
-				f = (f+1.5)*2 ;
+//					f = ((f+1.5)*2 - 1 )*60 ;
+					f = Math.round(((f+1.5)*2 - 1 )*600)/10;
 					var n = meters[index].split(" ").join("");
 					local.values.getChild("Meters").getChild(n).set(f); } } } } 
 	else { script.log(address);
 		if (["ch"].indexOf(arrayAddress[1])>=0) {
-			setValue(arrayAddress, args[0]); } }
+			setValue(arrayAddress, args[0]); } }  }
 
 
 // Infos Insert
