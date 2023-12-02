@@ -531,7 +531,7 @@ function oscEvent(address, args) {
 
 // Vu-Meters
 	if (activMeters.get()) {
-	var arrayAddress = address.split("/");
+//	var arrayAddress = address.split("/");
 	if (address == "/meters/1") {
 		for(var i=0; i < args.length; i++) {
 			var data = args[i];
@@ -543,9 +543,11 @@ function oscEvent(address, args) {
 					f = Math.round(((f+1.5)*2 - 1 )*600)/10;
 					var n = meters[index].split(" ").join("");
 					local.values.getChild("Meters").getChild(n).set(f); } } } } 
-	else { script.log(address);
+/*	else { script.log(address);
 		if (["ch"].indexOf(arrayAddress[1])>=0) {
-			setValue(arrayAddress, args[0]); } }  }
+			setValue(arrayAddress, args[0]); } }  
+*/			
+			}
 
 
 // Infos Insert
