@@ -196,7 +196,8 @@ function init() {
 		faders.setCollapsed(true);
 		faders.addTrigger("Sync Faders", "Get Fader Values from the Console" , false);	
 		for (var n = 0; n < mixerNames.length; n++) {
-			faders.addFloatParameter(mixerNames[n], "", 0, 0, 1); } 
+		var fade = faders.addFloatParameter(mixerNames[n], "", 0, 0, 1); 
+		fade.setAttribute("readonly" ,true);} 
 				
 //=========================CHANNEL STRIPS=================================
 	
