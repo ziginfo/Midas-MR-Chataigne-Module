@@ -1,6 +1,9 @@
 ## Midas MR and Behringer X-Air control with chataigne by OSC
 Default port must be 10024 !
 
+Thanks to "norbertrostaing". My MR-Module-Script  is partially based on his M32 Script and he helped also for the Meter-Display !
+In a more general way the module is based on the OSC-Implementation published by Behringer on their Wiki web-site : https://behringer.world/wiki/doku.php?id=x-air_osc     
+
 Most of the commands and actions run for both, MR12 and MR18 (and Behringer XR12 to XR18); but some of them will work only for a given model !   
 The Player-Functions for example are valid only for MR12   
 And please be aware that the number of available Channels and Busses etc depends on the model (MR-12 or 18; XR 12, 16, or 18) !
