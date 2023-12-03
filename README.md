@@ -2,7 +2,7 @@
 Default port must be 10024 !
 
 Thanks to "norbertrostaing". This MR-Module-Script  is partially based on his M32 Script and he helped also for the Meter-Display !
-In a more general way the module is based on the OSC-Implementation published by Behringer on their Wiki web-site : https://behringer.world/wiki/doku.php?id=x-air_osc     
+In a more general way the module is based on the OSC-Implementation published by Behringer on their Wiki Web Site : https://behringer.world/wiki/doku.php?id=x-air_osc     
 
 Most of the commands and actions run for both, MR12 and MR18 (and Behringer XR12 to XR18); but some of them will work only for a given model !   
 The Player-Functions for example are valid only for MR12   
