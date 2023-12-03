@@ -9,7 +9,7 @@ The Player-Functions for example are valid only for MR12
 And please be aware that the number of available Channels and Busses etc depends on the model (MR-12 or 18; XR 12, 16, or 18) !
 
 ### Updated to version 2.3  (dec 2023)
-Now we have feedback for Meters also !   
+Now we have feedback for Meters also !  (thanks to "norbertrostaing".)   
 We have Feedback from the MR/X-Air Console for Names and Fader-Levels, EQ, Mute, Dyn and Pan Status etc... 
 There is also a Feedback-Tab called **"Selected Channel"**. You can select a given channel by Target and Number and get its (pretty)full feedback as : name, fader, eq- and dyn-settings etc, etc... I will add more values later-on, bur also don't wanna overload this tab either) After changing the target or the channel-number just hit "Click To Sync" to request the new values from the console. And you can also reset the whole Selected-Channel-Form by clicking the "Reset-Button".   
 There is also a "radio-button" called "Show SelChan Values" that has to be checked to show the values.   
