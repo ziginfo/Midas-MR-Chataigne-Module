@@ -211,6 +211,8 @@ function init() {
 		chan.addBoolParameter("Dyn", "", false);
 		chan.addBoolParameter("LoCut", "", false);
 		chan.addBoolParameter("Gate", "", false);
+		chan.addColorParameter("Color", "", 0xffffffff);
+		chan.addBoolParameter("ColorInvert", "", false);
 		chan.setCollapsed(true);}
 		
 		for (var i = 1; i<=6; i++) {
@@ -221,6 +223,8 @@ function init() {
 		chan.addBoolParameter("Mute", "", false);
 		chan.addBoolParameter("EQ", "", false);
 		chan.addBoolParameter("Dyn", "", false);
+		chan.addColorParameter("Color", "", 0xffffffff);
+		chan.addBoolParameter("ColorInvert", "", false);
 		chan.setCollapsed(true);}
 		
 	chan = local.values.channels.addContainer("Main LR");
@@ -230,6 +234,8 @@ function init() {
 		chan.addBoolParameter("Mute", "", false);
 		chan.addBoolParameter("EQ", "", false);
 		chan.addBoolParameter("Dyn", "", false);
+		chan.addColorParameter("Color", "", 0xffffffff);
+		chan.addBoolParameter("ColorInvert", "", false);
 		chan.setCollapsed(true);
 
 //==========================SELECTED CHANNEL============================	
@@ -272,7 +278,6 @@ function init() {
 //========================================================================
 
 function moduleValueChanged(value) { 
-
 // >>>>>>>>>>>>>>> RESET ALL <<<<<<<<<<<<<
 	if (value.name == "clickToResetAll"){
 	
@@ -669,7 +674,18 @@ function oscEvent(address, args) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/gate/on") {
 		local.values.channels.getChild('Channel'+i).getChild('Gate').set(args[0]);} }
-		
+
+//Color
+		for(var i=1; i <=16; i++) {
+		if (i<10){n="0"+i;} else{n=i;}
+		if (address == "/ch/"+n+"/config/color") {
+		setColor(local.values.channels.getChild('Channel'+i),args[0]);}}
+		if (address == "/lr/config/color") {
+		setColor(local.values.channels.getChild('mainLR'),args[0]);}
+		for(var i=1; i <=6; i++) {
+		if (address == "/bus/"+i+"/config/color") {
+		//local.values.channels.getChild('Bus'+i).getChild('Dyn').set(args[0]);} }
+		setColor(local.values.channels.getChild('Bus'+i),args[0]);}}
 //=====================SELECTED CHANNEL>>>>>>>>>>>>>>>>>>>>>>>>
 
 		if (SelChanParams.get()) {		
@@ -1571,4 +1587,22 @@ function clear_solo () {
 }
 function xinfo () { 	
 	local.send("/xinfo");
+}
+
+//Helper Function
+
+function setColor(ref, val){
+	if(val>=8){//set inverted colors as regular colors
+		val=val-8;
+		ref.getChild("ColorInvert").set(true);}
+	else{
+		ref.getChild("ColorInvert").set(false);}
+	if (val == 0){ref.getChild("Color").set(0xff000000);}
+	else if(val == 1){ref.getChild("Color").set(0xffff0000);}
+	else if(val == 2){ref.getChild("Color").set(0xff00ff00);}
+	else if(val == 3){ref.getChild("Color").set(0xffffff00);}
+	else if(val == 4){ref.getChild("Color").set(0xff0000ff);}
+	else if(val == 5){ref.getChild("Color").set(0xffff00ff);}
+	else if(val == 6){ref.getChild("Color").set(0xff00ffff);}
+	else if(val == 7){ref.getChild("Color").set(0xffffffff);}
 }
