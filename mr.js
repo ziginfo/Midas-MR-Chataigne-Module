@@ -93,8 +93,8 @@ var selChann = {
 	"dyn.range" : ["Gate Range", "s", "gateRange", "gate/range"],
 	"dyn.mode" : ["Gate Mode", "s", "gateMode", "gate//mode"]};
 	
-var paramLink =["config/name", "mix/fader", "mix/pan", "mix/on", "eq/on", "dyn/on", "preamp/hpon", "gate/on", "config/color"];
-var paramName =["name", "fader", "pan", "mute", "eq", "dyn", "locut", "gate", "color"];	
+var paramLink =["config/name", "mix/fader", "mix/pan", "mix/on", "eq/on", "dyn/on", "preamp/hpon", "gate/on"];
+var paramName =["name", "fader", "pan", "mute", "eq", "dyn", "locut", "gate"];	
 	
 var dynRatio = {"1" : [ "0" , "1.1 : 1"], "2" : [ "1" , "1.3 : 1"], "3" : [ "2" , "1.5 : 1"], "4" : [ "3" , "2.0 : 1"], "5" : [ "4" , "2.5 : 1"],
 	"6" : [ "5" , "3.0 : 1"], "7" : [ "6" , "4.0 : 1"], "8" : [ "7" , "5.0 : 1"], "9" : [ "8" , "7.0 : 1"], "10" : [ "9" , "10 : 1"],
@@ -344,7 +344,6 @@ function moduleValueChanged(value) {
 		if (targ=="lr") {var link = targ ;}
 		else {link = targ+"/"+no ;}			
 			local.send("/"+link+"/config/name");
-			local.send("/"+link+"/config/color");
 			local.send("/"+link+"/mix/fader");
 			local.send("/"+link+"/mix/pan");
 			local.send("/"+link+"/mix/on");
@@ -406,8 +405,7 @@ function moduleValueChanged(value) {
 		local.send("/subscribe","/ch/"+n+"/"+paramLink[4]);
 		local.send("/subscribe","/ch/"+n+"/"+paramLink[5]);
 		local.send("/subscribe","/ch/"+n+"/"+paramLink[6]);
-		local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);
-		local.send("/subscribe","/ch/"+n+"/"+paramLink[8]);}
+		local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);}
 // Bus		
 		for(var i=1; i <=4; i++) {
 		local.send("/subscribe","/bus/"+i+"/"+paramLink[0]);
@@ -415,12 +413,10 @@ function moduleValueChanged(value) {
 		local.send("/subscribe","/bus/"+i+"/"+paramLink[2]);
 		local.send("/subscribe","/bus/"+i+"/"+paramLink[3]);
 		local.send("/subscribe","/bus/"+i+"/"+paramLink[4]);
-		local.send("/subscribe","/bus/"+i+"/"+paramLink[5]);
-		local.send("/subscribe","/bus/"+i+"/"+paramLink[8]);}
+		local.send("/subscribe","/bus/"+i+"/"+paramLink[5]);}
 // Fx-Rtn and DCA 			
 		for(var i=1; i <=4; i++) {
 		local.send("/subscribe","/rtn/"+i+"/config/name");
-		local.send("/subscribe","/rtn/"+i+"/config/color");
 		local.send("/subscribe","/rtn/"+i+"/mix/fader");
 		local.send("/subscribe","/dca/"+i+"/config/name");
 		local.send("/subscribe","/dca/"+i+"/fader");}
@@ -428,7 +424,6 @@ function moduleValueChanged(value) {
 		local.send("/subscribe","/rtn/aux/mix/fader");
 // Main LR		
 		local.send("/subscribe","/lr/config/name");
-		local.send("/subscribe","/lr/config/color");
 		local.send("/subscribe","/lr/mix/fader");
 		local.send("/subscribe","/lr/mix/pan");
 		local.send("/subscribe","/lr/mix/on");
@@ -604,23 +599,7 @@ function oscEvent(address, args) {
 		local.values.channels.getChild('Bus'+m).getChild('Name').set(args[0]);}
 		if (m == 28) {
 		local.values.channels.getChild('MainLR').getChild('Name').set(args[0]);} 		
-		} }
-		
-//========================== COLOR INSERT >>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	
-		for (var n = 0; n < mixerNames.length; n++) {
-		var addr1 = mixerLinks[n];
-		if (address == addr1 + paramLink[8]) {
-		var child = mixerNames[n].split(" ").join("") ;
-// Channels Container		
-		var m = n+1;
-		if (m<=16) {
-		local.values.channels.getChild('Channel'+m).getChild('Color').set(args[0]);}
-		if (m >21 && m<28) { m = m-21;
-		local.values.channels.getChild('Bus'+m).getChild('Color').set(args[0]);}
-		if (m == 28) {
-		local.values.channels.getChild('MainLR').getChild('Color').set(args[0]);} 		
-		} }      
+		} }   
 				
 //============================ FADERS INSERT>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		for (var n = 0; n < mixerNames.length; n++) {
