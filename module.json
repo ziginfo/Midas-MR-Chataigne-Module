@@ -478,14 +478,14 @@
 						"Magenta" : 5,
 						"Cyan" : 6,
 						"White" : 7,
-						"Black-i" : 8,
-						"Red-i" : 9,
-						"Green-i" : 10,
-						"Yellow-i" : 11,
-						"Blue-i" : 12,
-						"Magenta-i" : 13,
-						"Cyan-i" : 14,
-						"White-i" : 15 } } 
+						"Black-inv" : 8,
+						"Red-inv" : 9,
+						"Green-inv" : 10,
+						"Yellow-inv" : 11,
+						"Blue-inv" : 12,
+						"Magenta-inv" : 13,
+						"Cyan-inv" : 14,
+						"White-inv" : 15 } } 
 			} },
 
 
