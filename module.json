@@ -3,7 +3,7 @@
 	"type": "OSC",
 	"path": "Console",
 	
-	"version": "2.3.3",
+	"version": "2.3.4",
 	"description": "Allow you to control a Midas MR or Behringer X-Air with chataigne",
 	"url":"https://github.com/ziginfo/Midas-MR-Chataigne-Module",
 	"downloadURL": "https://github.com/ziginfo/Midas-MR-Chataigne-Module/archive/refs/heads/main.zip",
@@ -470,7 +470,7 @@
 				"Value": {
 					"type": "Enum",
 					"options" : {
-						"OFF" : 0,
+						"Black" : 0,
 						"Red" : 1,
 						"Green" : 2,
 						"Yellow" : 3,
@@ -478,7 +478,7 @@
 						"Magenta" : 5,
 						"Cyan" : 6,
 						"White" : 7,
-						"OFFi" : 8,
+						"Black-i" : 8,
 						"Red-i" : 9,
 						"Green-i" : 10,
 						"Yellow-i" : 11,

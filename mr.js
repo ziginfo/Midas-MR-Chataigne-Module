@@ -203,6 +203,8 @@ function init() {
 	
 		for (var i = 1; i<=16; i++) {
 	chan = local.values.channels.addContainer("Channel "+i);
+		var col =chan.addColorParameter("ColorLabel", "", [0,0,0]);
+		col.setAttribute("readonly" ,true);
 		chan.addStringParameter("Name", "","");
 		chan.addFloatParameter("Fader", "", 0);
 		chan.addFloatParameter("Pan","", 0 , -50, 50);
@@ -211,30 +213,34 @@ function init() {
 		chan.addBoolParameter("Dyn", "", false);
 		chan.addBoolParameter("LoCut", "", false);
 		chan.addBoolParameter("Gate", "", false);
-		chan.addColorParameter("Color", "", 0xffffffff);
+		chan.addEnumParameter("Color", "Color", "Black" , 0, "Red" , 1, "Green" , 2, "Yellow" , 3, "Blue" , 4, "Magenta" , 5, "Cyan" , 6, "White" , 7, "Black-inv" , 8, "Red-inv" , 9, "Green-inv" , 10, "Yellow-inv" , 11, "Blue-inv" , 12, "Magenta-inv" , 13, "Cyan-inv" , 14, "White-inv" , 15);
 		chan.addBoolParameter("ColorInvert", "", false);
 		chan.setCollapsed(true);}
 		
 		for (var i = 1; i<=6; i++) {
 	chan = local.values.channels.addContainer("Bus "+i);
+		var col =chan.addColorParameter("ColorLabel", "", [0,0,0]);
+		col.setAttribute("readonly" ,true);
 		chan.addStringParameter("Name", "","");
 		chan.addFloatParameter("Fader", "", 0);
 		chan.addFloatParameter("Pan","", 0 , -50, 50);
 		chan.addBoolParameter("Mute", "", false);
 		chan.addBoolParameter("EQ", "", false);
 		chan.addBoolParameter("Dyn", "", false);
-		chan.addColorParameter("Color", "", 0xffffffff);
+		chan.addEnumParameter("Color", "Color", "Black" , 0, "Red" , 1, "Green" , 2, "Yellow" , 3, "Blue" , 4, "Magenta" , 5, "Cyan" , 6, "White" , 7, "Black-inv" , 8, "Red-inv" , 9, "Green-inv" , 10, "Yellow-inv" , 11, "Blue-inv" , 12, "Magenta-inv" , 13, "Cyan-inv" , 14, "White-inv" , 15);
 		chan.addBoolParameter("ColorInvert", "", false);
 		chan.setCollapsed(true);}
 		
 	chan = local.values.channels.addContainer("Main LR");
+		var col =chan.addColorParameter("ColorLabel", "", [0,0,0]);
+		col.setAttribute("readonly" ,true);
 		chan.addStringParameter("Name", "","");
 		chan.addFloatParameter("Fader", "", 0);
 		chan.addFloatParameter("Pan","", 0, -50, 50);
 		chan.addBoolParameter("Mute", "", false);
 		chan.addBoolParameter("EQ", "", false);
 		chan.addBoolParameter("Dyn", "", false);
-		chan.addColorParameter("Color", "", 0xffffffff);
+		chan.addEnumParameter("Color", "Color", "Black" , 0, "Red" , 1, "Green" , 2, "Yellow" , 3, "Blue" , 4, "Magenta" , 5, "Cyan" , 6, "White" , 7, "Black-inv" , 8, "Red-inv" , 9, "Green-inv" , 10, "Yellow-inv" , 11, "Blue-inv" , 12, "Magenta-inv" , 13, "Cyan-inv" , 14, "White-inv" , 15);
 		chan.addBoolParameter("ColorInvert", "", false);
 		chan.setCollapsed(true);
 
@@ -245,6 +251,8 @@ function init() {
 		selchan.addIntParameter("Select No","Select the Channel Number",1,1,16) ;
 		selchan.addTrigger("Click to Sync", "" , false);
 		selchan.addTrigger("Reset Value Fields", "" , false);
+		var f = selchan.addColorParameter("ColorLabel", "", [0,0,0]);
+		f.setAttribute("readonly" ,true);
 		var champs = util.getObjectProperties(selChann);
 		for (var n = 0; n < champs.length; n++) {
 			if (selChann[champs[n]][1] == "f") {
@@ -284,18 +292,21 @@ function moduleValueChanged(value) {
 //reset Names
 		for (var n = 0; n < mixerNames.length; n++) {
 		child = mixerNames[n].split(" ").join("");
-		local.values.names.getChild(child).set("");  }
+		local.values.names.getChild(child).set(""); 
+		script.log("index: "+n+" - "+child); }
 //reset Faders
 		for (var n = 0; n < mixerNames.length; n++) {
 		child = mixerNames[n].split(" ").join("");
 		local.values.faders.getChild(child).set(0);  }
 		
 //reset Channels		
-		for (var n = 0; n < 26; n++) {
+		for (var n = 0; n < 28; n++) {
 		if (n > 15 && n<21){} else {
 		child = mixerNames[n].split(" ").join("");
 		local.values.channels.getChild(child).getChild('Name').set("");
-		local.values.channels.getChild(child).getChild('Color').set(0xffffffff);
+		local.values.channels.getChild(child).getChild('Color').set(0);
+		local.values.channels.getChild(child).getChild('ColorLabel').set(0xff000000);
+		local.values.channels.getChild(child).getChild('ColorInvert').set(false);
 		local.values.channels.getChild(child).getChild('Fader').set(0);
 		local.values.channels.getChild(child).getChild('Pan').set(0);
 		local.values.channels.getChild(child).getChild('Mute').set(0);
@@ -314,6 +325,7 @@ function moduleValueChanged(value) {
 // >>>>>>>>>>>RESET SELECTED CHANNEL <<<<<<<<<<<<<<<<<<<<<<<
 
 		if (value.name == "resetValueFields"){
+		local.values.selectedChannel.colorLabel.set(0xff000000);
 		var champs = util.getObjectProperties(selChann);
 		for (var n = 0; n < champs.length; n++) {
 		var item = selChann[champs[n]][2] ;
@@ -410,7 +422,7 @@ function moduleValueChanged(value) {
 		local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);
 		local.send("/subscribe","/ch/"+n+"/"+paramLink[8]);}
 // Bus		
-		for(var i=1; i <=4; i++) {
+		for(var i=1; i <=6; i++) {
 		local.send("/subscribe","/bus/"+i+"/"+paramLink[0]);
 		local.send("/subscribe","/bus/"+i+"/"+paramLink[1]);
 		local.send("/subscribe","/bus/"+i+"/"+paramLink[2]);
@@ -445,6 +457,17 @@ function moduleValueChanged(value) {
 // >>>>>>>>>>>> Alerts
 		local.values.channels.advice.set("Values were sent !!") ;		
 // >>>>>>>>>>>> Sending Function
+// Color
+		
+		for(var i=1; i <=16; i++) {
+		var val = local.values.channels.getChild('Channel'+i).getChild('Color').get();		
+ 		if (i<10){n="0"+i;} else{n=i;}
+		local.send("/ch/"+n+"/config/color", val);}
+		for(var i=1; i <=6; i++) {
+		var val = local.values.channels.getChild('Bus'+i).getChild('Color').get();
+		local.send("/bus/"+i+"/config/color", val);}
+		var val = local.values.channels.mainLR.getChild('Color').get();
+		local.send("/lr/config/Color", val);
 // Name
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Name').get();
@@ -687,13 +710,16 @@ function oscEvent(address, args) {
 		for(var i=1; i <=16; i++) {
 		if (i<10){n="0"+i;} else{n=i;}
 		if (address == "/ch/"+n+"/config/color") {
-		setColor(local.values.channels.getChild('Channel'+i),args[0]);}}
+		setColor(local.values.channels.getChild('Channel'+i),args[0]);
+		setCol(local.values.channels.getChild('Channel'+i),args[0]);}}
 		if (address == "/lr/config/color") {
-		setColor(local.values.channels.getChild('mainLR'),args[0]);}
+		setColor(local.values.channels.getChild('mainLR'),args[0]);
+		setCol(local.values.channels.getChild('mainLR'),args[0]);}
 		for(var i=1; i <=6; i++) {
 		if (address == "/bus/"+i+"/config/color") {
 		//local.values.channels.getChild('Bus'+i).getChild('Dyn').set(args[0]);} }
-		setColor(local.values.channels.getChild('Bus'+i),args[0]);}}
+		setColor(local.values.channels.getChild('Bus'+i),args[0]);
+		setCol(local.values.channels.getChild('Bus'+i),args[0]);}}
 		
 //=====================SELECTED CHANNEL>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -704,7 +730,13 @@ function oscEvent(address, args) {
 		if (targ=="lr") {var link = targ ;}
 		else {link = targ+"/"+no ;}
 			
-//Selected Channel Name & Fader
+//Selected Channel Color, Name & Fader
+		if (address == "/"+link+"/config/color") {
+		setCol(local.values.getChild('selectedChannel'),args[0]);
+//		(local.values.selectedChannel.colorLabel ,args[0]);
+//		local.values.selectedChannel.label.set(args[0]);
+		}	
+		
 		if (address == "/"+link+"/config/name") {
 		local.values.selectedChannel.label.set(args[0]);}		
 		if (address == "/"+link+"/mix/fader") {
@@ -842,6 +874,48 @@ function oscEvent(address, args) {
 		local.values.selectedChannel.getChild('QEq'+i).set("");
 		local.values.selectedChannel.getChild('TypeEq'+i).set("");}}		
 }
+
+///===================  Helper Function ==================
+
+function setColor(ref, val){
+	if(val>=8){//set inverted colors as regular colors
+		ref.getChild("ColorInvert").set(true);}
+	else{
+		ref.getChild("ColorInvert").set(false);}
+	if (val == 0){ref.getChild("Color").set("Black");}
+	else if(val == 1){ref.getChild("Color").set("Red");}
+	else if(val == 2){ref.getChild("Color").set("Green");}
+	else if(val == 3){ref.getChild("Color").set("Yellow");}
+	else if(val == 4){ref.getChild("Color").set("Blue");}
+	else if(val == 5){ref.getChild("Color").set("Magenta");}
+	else if(val == 6){ref.getChild("Color").set("Cyan");}
+	else if(val == 7){ref.getChild("Color").set("White");}
+	else if(val == 8){ref.getChild("Color").set("Black-inv");}
+	else if(val == 9){ref.getChild("Color").set("Red-inv");}
+	else if(val == 10){ref.getChild("Color").set("Green-inv");}
+	else if(val == 11){ref.getChild("Color").set("Yellow-inv");}
+	else if(val == 12){ref.getChild("Color").set("Blue-inv");}
+	else if(val == 13){ref.getChild("Color").set("Magenta-inv");}
+	else if(val == 14){ref.getChild("Color").set("Cyan-inv");}
+	else if(val == 15){ref.getChild("Color").set("White-inv");}
+}
+
+
+function setCol(ref, val){
+	if(val>=8){//set inverted colors as regular colors
+		val=val-8;}
+	if (val == 0){ref.getChild("ColorLabel").set([0,0,0]);}
+	else if(val == 1){ref.getChild("ColorLabel").set([1,0,0]);}
+	else if(val == 2){ref.getChild("ColorLabel").set([0,1,0]);}
+	else if(val == 3){ref.getChild("ColorLabel").set([1,1,0]);}
+	else if(val == 4){ref.getChild("ColorLabel").set([0,0,1]);}
+	else if(val == 5){ref.getChild("ColorLabel").set([1,0,1]);}
+	else if(val == 6){ref.getChild("ColorLabel").set([0,1,1]);}
+	else if(val == 7){ref.getChild("ColorLabel").set([1,1,1]);}
+}
+
+
+
 
 ///===================  CONVERTER FUNCTIONS ==================
  
@@ -1598,20 +1672,3 @@ function xinfo () {
 	local.send("/xinfo");
 }
 
-//Helper Function
-
-function setColor(ref, val){
-	if(val>=8){//set inverted colors as regular colors
-		val=val-8;
-		ref.getChild("ColorInvert").set(true);}
-	else{
-		ref.getChild("ColorInvert").set(false);}
-	if (val == 0){ref.getChild("Color").set(0xff000000);}
-	else if(val == 1){ref.getChild("Color").set(0xffff0000);}
-	else if(val == 2){ref.getChild("Color").set(0xff00ff00);}
-	else if(val == 3){ref.getChild("Color").set(0xffffff00);}
-	else if(val == 4){ref.getChild("Color").set(0xff0000ff);}
-	else if(val == 5){ref.getChild("Color").set(0xffff00ff);}
-	else if(val == 6){ref.getChild("Color").set(0xff00ffff);}
-	else if(val == 7){ref.getChild("Color").set(0xffffffff);}
-}
