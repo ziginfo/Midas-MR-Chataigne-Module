@@ -174,7 +174,10 @@ function init() {
 	ShowInfos = local.parameters.addBoolParameter("Show Infos", "Show Informations", false);
 	AllowSend = local.parameters.addBoolParameter("Allow SendToConsole", "Allow Send-to-Console", false);
 	RequestInfo = local.values.addStringParameter("Request Sync","Request Action", "Request and Sync");
-	SyncAll = local.values.addTrigger("Click to Sync All", "Request all the Values from the Console !!" , false);	
+	SyncAll = local.values.addTrigger("Click to Sync All", "Request all the Values from the Console !!" , false);
+	SyncNames = local.values.addTrigger("Sync Names", "Request Names from the Console !!" , false);
+	SyncFaders = local.values.addTrigger("Sync Faders", "Request Faders from the Console !!" , false);
+	SyncColors = local.values.addTrigger("Sync Colors", "Request Colors from the Console !!" , false);		
 	ResetAll = local.values.addTrigger("Click to Reset All", "Reset all the Value-Fields !!" , false);
 	SendInfo = local.values.channels.addStringParameter("Channel Info", "Send to Console Info","Sending Values here!");
 	Sending = local.values.channels.addTrigger("Click to Send Updates", "Send Updated Values to the Console" , false);
@@ -392,7 +395,12 @@ function moduleValueChanged(value) {
 		var addr1 = mixerLinks[n];
 		if (addr1 == "/dca/1/" || addr1 == "/dca/2/" || addr1 == "/dca/3/" || addr1 == "/dca/4/"){var param ="fader" ;}
 		else {param = "mix/fader" ;}
-		local.send(addr1 + param) ; } } 	
+		local.send(addr1 + param) ; } } 
+// >>>>>>>>>>>>>>>>>> SYNC COLORS>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
+ 	if (value.name == "syncColors"){
+ 	for (var n = 0; n < mixerNames.length; n++) {
+		var addr1 = mixerLinks[n];
+		local.send (addr1 + paramLink[8]) ; } }	
  	
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // 					REQUEST SYNC ALL 
@@ -409,6 +417,7 @@ function moduleValueChanged(value) {
  		local.values.channels.advice.set(alert) ;
 	
 // >>>>>>>>>>>>>>>>>> SUBSCRIBE ACTIONS <<<<<<<<<<<<<<<<<<<<<<<<<<
+
 //Channels		
 		for(var i=1; i <=16; i++) {
  		if (i<10){n="0"+i;} else{n=i;}
@@ -447,7 +456,8 @@ function moduleValueChanged(value) {
 		local.send("/subscribe","/lr/mix/on");
 		local.send("/subscribe","/lr/eq/on");
 		local.send("/subscribe","/lr/dyn/on");		
-}	
+}
+
 
 // ==================================================================
 // 						 SEND DATA TO THE CONSOLE 
