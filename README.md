@@ -9,7 +9,7 @@ The Player-Functions for example are valid only for MR12
 And please be aware that the number of available Channels and Busses etc depends on the model (MR-12 or 18; XR 12, 16, or 18) !
 
 ### Updated to version 2.3.5  (Mars 2024)
-Added now Color-Feedback and new SYNC-All-Function - special thanks to [NiklasBerlin](https://github.com/niklasberlin/Midas-MR-Chataigne-Module)    
+Added now Color-Feedback and new SYNC-All-Function - special thanks to [NiklasBerlin](https://github.com/niklasberlin/Midas-MR-Chataigne-Module) !     
 And thanks to [Norbertrostaing](https://github.com/norbertrostaing) , we have feedback for Meters also !       
 We have Feedback from the MR/X-Air Console for Names and Fader-Levels, Colors, EQ, Mute, Dyn and Pan Status etc... 
 There is also a Feedback-Tab called **"Selected Channel"**. You can select a given channel by Target and Number and get its (pretty)full feedback as : color, name, fader, eq- and dyn-settings etc, etc...  After changing the target or the channel-number just hit "Click To Sync" to request the new values from the console. And you can also Reset the whole Selected-Channel-Form by clicking the "Reset-Button".   
