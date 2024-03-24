@@ -17,6 +17,8 @@ var trig;
 var snap;
 var snapname = "/-snap/name";
 var snapindex = "/-snap/index" ;
+var doSync = false;
+var syncStep = 0;
 
 var meters = [
 	"In 1", "In 2", "In 3", "In 4", "In 5", "In 6", "In 7", "In 8", "In 9", "In 10", "In 11", "In 12", "In 13", "In 14", "In 15", "In 16",
@@ -168,6 +170,9 @@ var alerts = [
 //  initial functions
 function init() {
 
+//set rate of the update function to once every second
+script.setUpdateRate(1);
+
 // Insert Parameter Buttons & Infos======>>>>>>>>>>>>>>>>>>>>>>>>
 	activMeters = local.parameters.addBoolParameter("Use Meters", "Ask the console to send meters to chataigne" , false);
 	SelChanParams = local.parameters.addBoolParameter("Show SelChan Values", "", true);
@@ -296,11 +301,14 @@ function moduleValueChanged(value) {
 		for (var n = 0; n < mixerNames.length; n++) {
 		child = mixerNames[n].split(" ").join("");
 		local.values.names.getChild(child).set(""); 
-		script.log("index: "+n+" - "+child); }
+		//script.log("index: "+n+" - "+child); 
+		}
 //reset Faders
 		for (var n = 0; n < mixerNames.length; n++) {
 		child = mixerNames[n].split(" ").join("");
-		local.values.faders.getChild(child).set(0);  }
+		local.values.faders.getChild(child).set(0);  
+		//script.log("index: "+n+" - "+child);
+		}
 		
 //reset Channels		
 		for (var n = 0; n < 28; n++) {
@@ -314,7 +322,9 @@ function moduleValueChanged(value) {
 		local.values.channels.getChild(child).getChild('Pan').set(0);
 		local.values.channels.getChild(child).getChild('Mute').set(0);
 		local.values.channels.getChild(child).getChild('EQ').set(0);
-		local.values.channels.getChild(child).getChild('Dyn').set(0); } }		
+		local.values.channels.getChild(child).getChild('Dyn').set(0);
+		//script.log(child);
+		setColor(local.values.channels.getChild(child),0);} }	
 		for (var n = 0; n < 16; n++) {
 		child = mixerNames[n].split(" ").join("");
 		local.values.channels.getChild(child).getChild('LoCut').set(0);
@@ -322,6 +332,8 @@ function moduleValueChanged(value) {
 // others		
 		local.values.channels.channelInfo.set("Sending Values here!") ;
 		local.values.channels.advice.set("Request Sync First") ;
+		//reset MainLR Color
+		setColor(local.values.channels.getChild(mixerNames[27].split(" ").join("")),0);
 				
 	}
 
@@ -359,6 +371,7 @@ function moduleValueChanged(value) {
 		if(targ=="ch" && no < 10){no = "0"+no ;} else {no=no ;}
 		if (targ=="lr") {var link = targ ;}
 		else {link = targ+"/"+no ;}			
+			local.send("/"+link+"/config/color");
 			local.send("/"+link+"/config/name");
 			local.send("/"+link+"/config/color");
 			local.send("/"+link+"/mix/fader");
@@ -408,6 +421,9 @@ function moduleValueChanged(value) {
 
  	if (value.name == "clickToSyncAll"){ 
 
+		//enable staggered sync
+		doSync = true;
+
 // set Advices and Alerts
  		var alert = alerts[0];
  		local.values.requestSync.set(alert) ;
@@ -419,43 +435,43 @@ function moduleValueChanged(value) {
 // >>>>>>>>>>>>>>>>>> SUBSCRIBE ACTIONS <<<<<<<<<<<<<<<<<<<<<<<<<<
 
 //Channels		
-		for(var i=1; i <=16; i++) {
- 		if (i<10){n="0"+i;} else{n=i;}
-		local.send("/subscribe","/ch/"+n+"/"+paramLink[0]);
-		local.send("/subscribe","/ch/"+n+"/"+paramLink[1]);
-		local.send("/subscribe","/ch/"+n+"/"+paramLink[2]);
-		local.send("/subscribe","/ch/"+n+"/"+paramLink[3]);
-		local.send("/subscribe","/ch/"+n+"/"+paramLink[4]);
-		local.send("/subscribe","/ch/"+n+"/"+paramLink[5]);
-		local.send("/subscribe","/ch/"+n+"/"+paramLink[6]);
-		local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);
-		local.send("/subscribe","/ch/"+n+"/"+paramLink[8]);}
+//		for(var i=1; i <=16; i++) {
+// 		if (i<10){n="0"+i;} else{n=i;}
+//		local.send("/subscribe","/ch/"+n+"/"+paramLink[0]);
+//		local.send("/subscribe","/ch/"+n+"/"+paramLink[1]);
+//		local.send("/subscribe","/ch/"+n+"/"+paramLink[2]);
+//		local.send("/subscribe","/ch/"+n+"/"+paramLink[3]);
+//		local.send("/subscribe","/ch/"+n+"/"+paramLink[4]);
+//		local.send("/subscribe","/ch/"+n+"/"+paramLink[5]);
+//		local.send("/subscribe","/ch/"+n+"/"+paramLink[6]);
+//		local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);
+//		local.send("/subscribe","/ch/"+n+"/"+paramLink[8]);}
 // Bus		
-		for(var i=1; i <=6; i++) {
-		local.send("/subscribe","/bus/"+i+"/"+paramLink[0]);
-		local.send("/subscribe","/bus/"+i+"/"+paramLink[1]);
-		local.send("/subscribe","/bus/"+i+"/"+paramLink[2]);
-		local.send("/subscribe","/bus/"+i+"/"+paramLink[3]);
-		local.send("/subscribe","/bus/"+i+"/"+paramLink[4]);
-		local.send("/subscribe","/bus/"+i+"/"+paramLink[5]);
-		local.send("/subscribe","/bus/"+i+"/"+paramLink[8]);}
+//		for(var i=1; i <=6; i++) {
+//		local.send("/subscribe","/bus/"+i+"/"+paramLink[0]);
+//		local.send("/subscribe","/bus/"+i+"/"+paramLink[1]);
+//		local.send("/subscribe","/bus/"+i+"/"+paramLink[2]);
+//		local.send("/subscribe","/bus/"+i+"/"+paramLink[3]);
+//		local.send("/subscribe","/bus/"+i+"/"+paramLink[4]);
+//		local.send("/subscribe","/bus/"+i+"/"+paramLink[5]);
+//		local.send("/subscribe","/bus/"+i+"/"+paramLink[8]);}
 // Fx-Rtn and DCA 			
-		for(var i=1; i <=4; i++) {
-		local.send("/subscribe","/rtn/"+i+"/config/name");
-		local.send("/subscribe","/rtn/"+i+"/config/color");
-		local.send("/subscribe","/rtn/"+i+"/mix/fader");
-		local.send("/subscribe","/dca/"+i+"/config/name");
-		local.send("/subscribe","/dca/"+i+"/fader");}
-		local.send("/subscribe","/rtn/aux/config/name");		 
-		local.send("/subscribe","/rtn/aux/mix/fader");
+//		for(var i=1; i <=4; i++) {
+//		local.send("/subscribe","/rtn/"+i+"/config/name");
+//		local.send("/subscribe","/rtn/"+i+"/config/color");
+//		local.send("/subscribe","/rtn/"+i+"/mix/fader");
+//		local.send("/subscribe","/dca/"+i+"/config/name");
+//		local.send("/subscribe","/dca/"+i+"/fader");}
+//		local.send("/subscribe","/rtn/aux/config/name");		 
+//		local.send("/subscribe","/rtn/aux/mix/fader");
 // Main LR		
-		local.send("/subscribe","/lr/config/name");
-		local.send("/subscribe","/lr/config/color");
-		local.send("/subscribe","/lr/mix/fader");
-		local.send("/subscribe","/lr/mix/pan");
-		local.send("/subscribe","/lr/mix/on");
-		local.send("/subscribe","/lr/eq/on");
-		local.send("/subscribe","/lr/dyn/on");		
+//		local.send("/subscribe","/lr/config/name");
+//		local.send("/subscribe","/lr/config/color");
+//		local.send("/subscribe","/lr/mix/fader");
+//		local.send("/subscribe","/lr/mix/pan");
+//		local.send("/subscribe","/lr/mix/on");
+//		local.send("/subscribe","/lr/eq/on");
+//		local.send("/subscribe","/lr/dyn/on");		
 }
 
 
@@ -481,7 +497,7 @@ function moduleValueChanged(value) {
 // Name
 		for(var i=1; i <=16; i++) {
 		var val = local.values.channels.getChild('Channel'+i).getChild('Name').get();
- 		if (i<10){n="0"+i;} else{n=i;}
+		if (i<10){n="0"+i;} else{n=i;}
 		local.send("/ch/"+n+"/config/name", val);}
 		for(var i=1; i <=6; i++) {
 		var val = local.values.channels.getChild('Bus'+i).getChild('Name').get();
@@ -558,9 +574,94 @@ function moduleValueChanged(value) {
 function update(deltaTime) {
 		var now = util.getTime();
 		if(now > TSSendAlive) {
-		TSSendAlive = now + 8;
-		keepAlive(); }
+			TSSendAlive = now + 8;
+			keepAlive(); 
+		}
+		//if we need to do a sync we need to request the data in chunks so that the mixer has time to answer
+		if (doSync){ 
+			script.setUpdateRate(4); //speedup the update rate to 4 requests per second
+			if(syncStep == 0){//update channels 1-6
+				for(var i=1; i <=6; i++) {
+					if (i<10){n="0"+i;} else{n=i;}
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[0]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[1]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[2]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[3]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[4]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[5]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[6]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[8]);
+				}
+				syncStep++;
+			}else if(syncStep == 1){//update channels 7-12
+				for(var i=7; i <=12; i++) {
+					if (i<10){n="0"+i;} else{n=i;}
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[0]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[1]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[2]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[3]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[4]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[5]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[6]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[8]);
+				}
+				syncStep++;
+			}else if(syncStep == 2){//update channels 13-16
+				for(var i=13; i <=16; i++) {
+					if (i<10){n="0"+i;} else{n=i;}
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[0]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[1]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[2]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[3]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[4]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[5]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[6]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);
+					local.send("/subscribe","/ch/"+n+"/"+paramLink[8]);
+				}
+				syncStep++;
+			}else if(syncStep==3){ //update Buses
+				for(var i=1; i <=6; i++) {
+					local.send("/subscribe","/bus/"+i+"/"+paramLink[0]);
+					local.send("/subscribe","/bus/"+i+"/"+paramLink[1]);
+					local.send("/subscribe","/bus/"+i+"/"+paramLink[2]);
+					local.send("/subscribe","/bus/"+i+"/"+paramLink[3]);
+					local.send("/subscribe","/bus/"+i+"/"+paramLink[4]);
+					local.send("/subscribe","/bus/"+i+"/"+paramLink[5]);
+					local.send("/subscribe","/bus/"+i+"/"+paramLink[8]);
+				}
+				syncStep++;
+			}else if(syncStep==4){ //update RX-Rtn and DCA
+				for(var i=1; i <=4; i++) {
+					local.send("/subscribe","/rtn/"+i+"/config/name");
+					local.send("/subscribe","/rtn/"+i+"/config/color");
+					local.send("/subscribe","/rtn/"+i+"/mix/fader");
+					local.send("/subscribe","/dca/"+i+"/config/name");
+					local.send("/subscribe","/dca/"+i+"/fader");
+				}
+				local.send("/subscribe","/rtn/aux/config/name");		 
+				local.send("/subscribe","/rtn/aux/mix/fader");
+				syncStep++;
+			}else if(syncStep==5){ //update Main LR
+				local.send("/subscribe","/lr/config/name");
+				local.send("/subscribe","/lr/config/color");
+				local.send("/subscribe","/lr/mix/fader");
+				local.send("/subscribe","/lr/mix/pan");
+				local.send("/subscribe","/lr/mix/on");
+				local.send("/subscribe","/lr/eq/on");
+				local.send("/subscribe","/lr/dyn/on");	
+				syncStep++;
+			}else{ //if no step instructions are found -> reduce update rate and disable sync
+				script.setUpdateRate(1);
+				doSync=false;
+				syncStep=0; //reset syncStep
+			}
+
+		}
 }
+
 function keepAlive() {
 		local.send("/xremote");
 		if (activMeters.get()) {
