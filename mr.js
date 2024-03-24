@@ -180,9 +180,9 @@ script.setUpdateRate(1);
 	AllowSend = local.parameters.addBoolParameter("Allow SendToConsole", "Allow Send-to-Console", false);
 	RequestInfo = local.values.addStringParameter("Request Sync","Request Action", "Request and Sync");
 	SyncAll = local.values.addTrigger("Click to Sync All", "Request all the Values from the Console !!" , false);
-	SyncNames = local.values.addTrigger("Sync Names", "Request Names from the Console !!" , false);
-	SyncFaders = local.values.addTrigger("Sync Faders", "Request Faders from the Console !!" , false);
-	SyncColors = local.values.addTrigger("Sync Colors", "Request Colors from the Console !!" , false);		
+//	SyncNames = local.values.addTrigger("Sync Names", "Request Names from the Console !!" , false);
+//	SyncFaders = local.values.addTrigger("Sync Faders", "Request Faders from the Console !!" , false);
+//	SyncColors = local.values.addTrigger("Sync Colors", "Request Colors from the Console !!" , false);		
 	ResetAll = local.values.addTrigger("Click to Reset All", "Reset all the Value-Fields !!" , false);
 	SendInfo = local.values.channels.addStringParameter("Channel Info", "Send to Console Info","Sending Values here!");
 	Sending = local.values.channels.addTrigger("Click to Send Updates", "Send Updated Values to the Console" , false);
@@ -316,7 +316,7 @@ function moduleValueChanged(value) {
 		child = mixerNames[n].split(" ").join("");
 		local.values.channels.getChild(child).getChild('Name').set("");
 		local.values.channels.getChild(child).getChild('Color').set(0);
-		local.values.channels.getChild(child).getChild('ColorLabel').set(0xff000000);
+		local.values.channels.getChild(child).getChild('ColorLabel').set([0,0,0]);
 		local.values.channels.getChild(child).getChild('ColorInvert').set(false);
 		local.values.channels.getChild(child).getChild('Fader').set(0);
 		local.values.channels.getChild(child).getChild('Pan').set(0);
@@ -340,7 +340,7 @@ function moduleValueChanged(value) {
 // >>>>>>>>>>>RESET SELECTED CHANNEL <<<<<<<<<<<<<<<<<<<<<<<
 
 		if (value.name == "resetValueFields"){
-		local.values.selectedChannel.colorLabel.set(0xff000000);
+		local.values.selectedChannel.colorLabel.set([0,0,0]);
 		var champs = util.getObjectProperties(selChann);
 		for (var n = 0; n < champs.length; n++) {
 		var item = selChann[champs[n]][2] ;
@@ -373,7 +373,6 @@ function moduleValueChanged(value) {
 		else {link = targ+"/"+no ;}			
 			local.send("/"+link+"/config/color");
 			local.send("/"+link+"/config/name");
-			local.send("/"+link+"/config/color");
 			local.send("/"+link+"/mix/fader");
 			local.send("/"+link+"/mix/pan");
 			local.send("/"+link+"/mix/on");
@@ -431,47 +430,6 @@ function moduleValueChanged(value) {
  		local.values.channels.channelInfo.set(alert) ;
  		var alert = alerts[2];
  		local.values.channels.advice.set(alert) ;
-	
-// >>>>>>>>>>>>>>>>>> SUBSCRIBE ACTIONS <<<<<<<<<<<<<<<<<<<<<<<<<<
-
-//Channels		
-//		for(var i=1; i <=16; i++) {
-// 		if (i<10){n="0"+i;} else{n=i;}
-//		local.send("/subscribe","/ch/"+n+"/"+paramLink[0]);
-//		local.send("/subscribe","/ch/"+n+"/"+paramLink[1]);
-//		local.send("/subscribe","/ch/"+n+"/"+paramLink[2]);
-//		local.send("/subscribe","/ch/"+n+"/"+paramLink[3]);
-//		local.send("/subscribe","/ch/"+n+"/"+paramLink[4]);
-//		local.send("/subscribe","/ch/"+n+"/"+paramLink[5]);
-//		local.send("/subscribe","/ch/"+n+"/"+paramLink[6]);
-//		local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);
-//		local.send("/subscribe","/ch/"+n+"/"+paramLink[8]);}
-// Bus		
-//		for(var i=1; i <=6; i++) {
-//		local.send("/subscribe","/bus/"+i+"/"+paramLink[0]);
-//		local.send("/subscribe","/bus/"+i+"/"+paramLink[1]);
-//		local.send("/subscribe","/bus/"+i+"/"+paramLink[2]);
-//		local.send("/subscribe","/bus/"+i+"/"+paramLink[3]);
-//		local.send("/subscribe","/bus/"+i+"/"+paramLink[4]);
-//		local.send("/subscribe","/bus/"+i+"/"+paramLink[5]);
-//		local.send("/subscribe","/bus/"+i+"/"+paramLink[8]);}
-// Fx-Rtn and DCA 			
-//		for(var i=1; i <=4; i++) {
-//		local.send("/subscribe","/rtn/"+i+"/config/name");
-//		local.send("/subscribe","/rtn/"+i+"/config/color");
-//		local.send("/subscribe","/rtn/"+i+"/mix/fader");
-//		local.send("/subscribe","/dca/"+i+"/config/name");
-//		local.send("/subscribe","/dca/"+i+"/fader");}
-//		local.send("/subscribe","/rtn/aux/config/name");		 
-//		local.send("/subscribe","/rtn/aux/mix/fader");
-// Main LR		
-//		local.send("/subscribe","/lr/config/name");
-//		local.send("/subscribe","/lr/config/color");
-//		local.send("/subscribe","/lr/mix/fader");
-//		local.send("/subscribe","/lr/mix/pan");
-//		local.send("/subscribe","/lr/mix/on");
-//		local.send("/subscribe","/lr/eq/on");
-//		local.send("/subscribe","/lr/dyn/on");		
 }
 
 
@@ -583,82 +541,81 @@ function update(deltaTime) {
 			if(syncStep == 0){//update channels 1-6
 				for(var i=1; i <=6; i++) {
 					if (i<10){n="0"+i;} else{n=i;}
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[0]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[1]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[2]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[3]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[4]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[5]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[6]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[8]);
+					local.send("/ch/"+n+"/"+paramLink[0]);
+					local.send("/ch/"+n+"/"+paramLink[1]);
+					local.send("/ch/"+n+"/"+paramLink[2]);
+					local.send("/ch/"+n+"/"+paramLink[3]);
+					local.send("/ch/"+n+"/"+paramLink[4]);
+					local.send("/ch/"+n+"/"+paramLink[5]);
+					local.send("/ch/"+n+"/"+paramLink[6]);
+					local.send("/ch/"+n+"/"+paramLink[7]);
+					local.send("/ch/"+n+"/"+paramLink[8]);
 				}
 				syncStep++;
 			}else if(syncStep == 1){//update channels 7-12
 				for(var i=7; i <=12; i++) {
 					if (i<10){n="0"+i;} else{n=i;}
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[0]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[1]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[2]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[3]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[4]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[5]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[6]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[8]);
+					local.send("/ch/"+n+"/"+paramLink[0]);
+					local.send("/ch/"+n+"/"+paramLink[1]);
+					local.send("/ch/"+n+"/"+paramLink[2]);
+					local.send("/ch/"+n+"/"+paramLink[3]);
+					local.send("/ch/"+n+"/"+paramLink[4]);
+					local.send("/ch/"+n+"/"+paramLink[5]);
+					local.send("/ch/"+n+"/"+paramLink[6]);
+					local.send("/ch/"+n+"/"+paramLink[7]);
+					local.send("/ch/"+n+"/"+paramLink[8]);
 				}
 				syncStep++;
 			}else if(syncStep == 2){//update channels 13-16
 				for(var i=13; i <=16; i++) {
 					if (i<10){n="0"+i;} else{n=i;}
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[0]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[1]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[2]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[3]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[4]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[5]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[6]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[7]);
-					local.send("/subscribe","/ch/"+n+"/"+paramLink[8]);
+					local.send("/ch/"+n+"/"+paramLink[0]);
+					local.send("/ch/"+n+"/"+paramLink[1]);
+					local.send("/ch/"+n+"/"+paramLink[2]);
+					local.send("/ch/"+n+"/"+paramLink[3]);
+					local.send("/ch/"+n+"/"+paramLink[4]);
+					local.send("/ch/"+n+"/"+paramLink[5]);
+					local.send("/ch/"+n+"/"+paramLink[6]);
+					local.send("/ch/"+n+"/"+paramLink[7]);
+					local.send("/ch/"+n+"/"+paramLink[8]);
 				}
 				syncStep++;
 			}else if(syncStep==3){ //update Buses
 				for(var i=1; i <=6; i++) {
-					local.send("/subscribe","/bus/"+i+"/"+paramLink[0]);
-					local.send("/subscribe","/bus/"+i+"/"+paramLink[1]);
-					local.send("/subscribe","/bus/"+i+"/"+paramLink[2]);
-					local.send("/subscribe","/bus/"+i+"/"+paramLink[3]);
-					local.send("/subscribe","/bus/"+i+"/"+paramLink[4]);
-					local.send("/subscribe","/bus/"+i+"/"+paramLink[5]);
-					local.send("/subscribe","/bus/"+i+"/"+paramLink[8]);
+					local.send("/bus/"+i+"/"+paramLink[0]);
+					local.send("/bus/"+i+"/"+paramLink[1]);
+					local.send("/bus/"+i+"/"+paramLink[2]);
+					local.send("/bus/"+i+"/"+paramLink[3]);
+					local.send("/bus/"+i+"/"+paramLink[4]);
+					local.send("/bus/"+i+"/"+paramLink[5]);
+					local.send("/bus/"+i+"/"+paramLink[8]);
 				}
 				syncStep++;
 			}else if(syncStep==4){ //update RX-Rtn and DCA
 				for(var i=1; i <=4; i++) {
-					local.send("/subscribe","/rtn/"+i+"/config/name");
-					local.send("/subscribe","/rtn/"+i+"/config/color");
-					local.send("/subscribe","/rtn/"+i+"/mix/fader");
-					local.send("/subscribe","/dca/"+i+"/config/name");
-					local.send("/subscribe","/dca/"+i+"/fader");
+					local.send("/rtn/"+i+"/config/name");
+					local.send("/rtn/"+i+"/config/color");
+					local.send("/rtn/"+i+"/mix/fader");
+					local.send("/dca/"+i+"/config/name");
+					local.send("/dca/"+i+"/fader");
 				}
-				local.send("/subscribe","/rtn/aux/config/name");		 
-				local.send("/subscribe","/rtn/aux/mix/fader");
+				local.send("/rtn/aux/config/name");		 
+				local.send("/rtn/aux/mix/fader");
 				syncStep++;
 			}else if(syncStep==5){ //update Main LR
-				local.send("/subscribe","/lr/config/name");
-				local.send("/subscribe","/lr/config/color");
-				local.send("/subscribe","/lr/mix/fader");
-				local.send("/subscribe","/lr/mix/pan");
-				local.send("/subscribe","/lr/mix/on");
-				local.send("/subscribe","/lr/eq/on");
-				local.send("/subscribe","/lr/dyn/on");	
+				local.send("/lr/config/name");
+				local.send("/lr/config/color");
+				local.send("/lr/mix/fader");
+				local.send("/lr/mix/pan");
+				local.send("/lr/mix/on");
+				local.send("/lr/eq/on");
+				local.send("/lr/dyn/on");	
 				syncStep++;
 			}else{ //if no step instructions are found -> reduce update rate and disable sync
 				script.setUpdateRate(1);
 				doSync=false;
 				syncStep=0; //reset syncStep
 			}
-
 		}
 }
 
