@@ -332,8 +332,8 @@ function moduleValueChanged(value) {
 // others		
 		local.values.channels.channelInfo.set("Sending Values here!") ;
 		local.values.channels.advice.set("Request Sync First") ;
-		//reset MainLR Color
-		setColor(local.values.channels.getChild(mixerNames[27].split(" ").join("")),0);
+//reset MainLR Color
+//		setColor(local.values.channels.getChild(mixerNames[27].split(" ").join("")),0);
 				
 	}
 
