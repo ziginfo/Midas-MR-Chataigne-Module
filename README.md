@@ -31,7 +31,10 @@ To stop all feedback from the console just deactivate the "Listen to Feedback" B
 ***Please note that after  inserting a "new" MR-Module and/or after changing the Remote-Host-Address, Feedback from the console may not be available immediatly and may need a "Save" (cmd-S) and  "Reload" (cmd-shift-O) of the Session-File.***   
 (*unless you had already entered the right "remoteHost address" in the "module.json" file before loading the module; in this case Feedback will be available instantly ! ... just use the "Sync" buttons.*) But anyway, once the session file is "saved" then the feedback will always be available !  
 
-Have Fun
+Have Fun    
+
+I wrote another Chataigne-Module for X32/M32 Consoles. You'll find it on my Github-Space : https://github.com/ziginfo/Midas-M32-Chataigne-Module    
+feel free to download and use it !   
 
 To learn more about Chataigne, please visit : http://benjamin.kuperberg.fr/chataigne/    
 And Ben's Youtube channel where you can find tutorials : https://youtu.be/RSBU9MwJNLY
